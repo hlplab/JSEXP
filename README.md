@@ -14,3 +14,5 @@ allow you to pull/push the most recent updates of this package while continuing 
 project that contains a submodule, remember that you need to also clone the submodule (by default the submodule folder will be cloned but 
 not its content). Use ```git clone --recurse-submodules https://github.com/chaconinc/MainProject``` during the cloning to also automatically
 clone all submodules contained in the project. Once cloned, you can update all submodules in your project by using ```git submodule update --remote```.
+Once updates to a submodule are committed and pushed to your project, you and your collaborators can pull these updates. Make sure to use 
+```git pull --recurse-submodules``` if you want changes to the submodules not only to be fetched but also to be pulled.
