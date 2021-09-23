@@ -114,18 +114,6 @@ var debugMode;
 function checkDebug(params) {
     if (params['debug']) {
         debugMode = true;
-        // $("#buttons").show();
-        // $("#mturk_form").addClass('debug').show().children().show();
-        // $("#comments").hide();
-
-        // some debugging shortcuts:
-        // $("#buttons").append("<input type='button' value='short blocks' " +
-        //                      "onclick='expTrials=[4,8];'" +
-        //                      "></button>");
-        // $("#buttons").append("<input type='button' value='skip calibration' " +
-        //                      "onclick='generateFakeData();" +
-        //                      "$(document).trigger(\"endCalibrationBlock\");'" +
-        //                      "></button>");
         return true;
     } else {
       debugMode = false;
@@ -133,18 +121,20 @@ function checkDebug(params) {
     }
 }
 
-var throwMessage = function(text) {
-  if (debugMode) console.log(text);
-}
+function collect_and_format_form_values(formID)
+ {
+     var str = '';
+     var elem = document.getElementById(formID).elements;
+     for(var i = 0; i < elem.length; i++)
+     {
+         str += "Type:" + elem[i].type + "\n";
+         str += "Name:" + elem[i].name + "\n";
+         str += "Value:" + elem[i].value + "\n\n";
+     }
+     return(str);
+ }
 
-var throwWarning = function(text) {
-  throwMessage('WARNING: ' + text);
-}
-
-var throwError = function(text) {
-  throwMessage('ERROR: ' + text);
-}
-
+// function to run through RSRB demographic and audio/comments forms and then submit
 var mturk_end_surveys_and_submit = function() {
    $("#instructions").hide();
    $('.question_section').not("[style='display:none']" ).show();
@@ -162,7 +152,7 @@ var mturk_end_surveys_and_submit = function() {
    currentId = visibleBox.attr("id");
 
    $('input').click(function() {
-       var nextToShow=$(visibleBox).next('.question_section:hidden');
+       var nextToShow = $(visibleBox).next('.question_section:hidden');
        if ($(this).attr('class') == 'moveOn') {
            // Check whether there is a multiple choice question that has not been checked
            // (this assumes that each section only has one multiple choice question)
@@ -175,7 +165,6 @@ var mturk_end_surveys_and_submit = function() {
                currentId = visibleBox.attr("id");
                document.body.scrollTop = document.documentElement.scrollTop = 0;
            } else {
-               // Show RSRB end survey as final part of the surveys
                $('#mturk_form #endForm').hide();
                $('#mturk_form #rsrb').show();
                $('#mturk_form #rsrb *').show();
@@ -190,26 +179,18 @@ var mturk_end_surveys_and_submit = function() {
                      $("#userDateTime").val(userDateTime.toUTCString());
                      $("#userDateTimeOffset").val(userDateTime.getTimezoneOffset());
 
+                     if (debugMode) {
+                       throwMessage(collect_and_format_form_values("mturk_form"));
+                       alert("Pausing for read-out from console.");
+                     }
+
                      $("#mturk_form").submit();
-                });
+               });
            }
        }
    });
 }
 
-
-// python style string formatting.  Replace {0} with first argument, {1} with second, etc.
-// DEPRECATED HERE: use version in utilities.js
-String.prototype.format = function() {
-  throwWarning('mturk_helpers::format() is DEPRECATED: use version in utilities.js');
-  var args = arguments;
-  return this.replace(/{(\d+)}/g, function(match, number) {
-    return typeof args[number] != 'undefined'
-      ? args[number]
-      : match
-    ;
-  });
-};
 
 /* Updated createCookie based on suggestion from Zach, 05-24-21
    since cookies in pages embedded in iFrames (as is the case for
@@ -238,4 +219,17 @@ function readCookie(name) {
 
 function eraseCookie(name) {
     createCookie(name,"",-1);
+}
+
+// General functions for determining whether there is output to console.
+var throwMessage = function(text) {
+  if (debugMode) console.log(text);
+}
+
+var throwWarning = function(text) {
+  throwMessage('WARNING: ' + text);
+}
+
+var throwError = function(text) {
+  throwMessage('ERROR: ' + text);
 }
