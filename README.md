@@ -10,4 +10,7 @@ The purpose of this updated git rep is to consolidate the various different vers
 # How to include this package into your projects
 
 We recommend using [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to add JSEXP to your project repository. This will 
-allow you to pull/push the most recent updates of this package while continuing to develop your experiment-specific code.
+allow you to pull/push the most recent updates of this package while continuing to develop your experiment-specific code. When you clone a 
+project that contains a submodule, remember that you need to also clone the submodule (by default the submodule folder will be cloned but 
+not its content). Use ```git clone --recurse-submodules https://github.com/chaconinc/MainProject``` during the cloning to also automatically
+clone all submodules contained in the project.
