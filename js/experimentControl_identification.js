@@ -246,7 +246,7 @@ Experiment.prototype = {
         var rsrbNum = this.rsrbProtocolNumber;
         $('form#mturk_form')
             .append($('<div id="rsrb" class="survey">')
-                    .load('surveys/rsrb_survey.html #rsrb > *', function() {
+                    .load('JSEXP/surveys/rsrb_survey.html #rsrb > *', function() {
                         // set protocol number
                         $('input[name="rsrb.protocol"]:hidden').val(rsrbNum);
                         throwMessage('Name of RSRB protocol: ' + rsrbNum + '\nRSRB information written into form field: ' + $('input[name="rsrb.protocol"]').val() + "\n(this value is expected to be undefined unless you are sandboxing or live)");
