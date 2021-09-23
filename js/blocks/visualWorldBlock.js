@@ -18,7 +18,7 @@
  *    along with this program.
  *    If not, see <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>.
  *
- * 
+ *
  * visworldBlock.js: javascript code for implementing a visual world experiment where
  * stimulus images are displayed and can then be clicked on in response to an audio
  * stimulus.
@@ -62,7 +62,7 @@ function VisworldBlock(params) {
     }
     css_stim_class = this.namespace + 'stim';
     css_image_class = this.namespace + 'image';
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     // set up audio stimuli and images
     // parse lists:
@@ -98,7 +98,7 @@ function VisworldBlock(params) {
             .hide()
             .appendTo('#visworldContainer');
     }
-    
+
     // install audio stimuli
     this.stimuli = concatenate_stimuli_and_install(allStims, css_stim_class);
     this.stimuli.images = allImgs;
@@ -109,14 +109,14 @@ function VisworldBlock(params) {
     $("<img />")
         .addClass('visworld')
         .attr('id', 'ready')
-        .attr('src', 'img/greenready.png')
+        .attr('src', 'JSEXP/img/greenready.png')
         .appendTo('#readyWaitContainer')
         .hide()
         .load();
     $("<img />")
         .addClass('visworld')
         .attr('id', 'wait')
-        .attr('src', 'img/greenwait.png')
+        .attr('src', 'JSEXP/img/greenwait.png')
         .appendTo('#readyWaitContainer')
         .hide()
         .load();
@@ -154,7 +154,7 @@ VisworldBlock.prototype = {
         ////////////////////////////////////////////////////////////////////////////////
         // construct list of items and randomize trial order
         this.itemOrder = orderStimuli(this.stimuli.reps, undefined, 'shuffle');
-        
+
         // install "start trial" handler for the "ready" light
         $('#readyWaitContainer img#ready')
             .click(function() {
@@ -166,15 +166,15 @@ VisworldBlock.prototype = {
 
         // install click handler on the stimulus images
         $('img.' + this.namespace + 'image').click(function(e) {_self.handleResp(e);});
-        
+
         // install, initialize, and show a progress bar (progressBar.js)
         installPB("progressBar");
         resetPB("progressBar");
         $("#progressBar").show();
         this.pbIncrement = 1.0 / this.itemOrder.length;
 
-        
-                   
+
+
     },
     takeBreak: function() {
         var _self = this;
@@ -196,7 +196,7 @@ VisworldBlock.prototype = {
 
         // display images after ITI/2
         setTimeout(function() {_self.showStimImages();}, _self.ITI/2);
-        
+
     },
     handlePlay: function() {
         var snd = this.stimuli.installed[this.itemOrder[this.n]];
@@ -282,7 +282,7 @@ VisworldBlock.prototype = {
     endBlock: function() {
         $("#visworldContainer").hide();
         $("#progressBar").hide();
-        
+
         // finally: hand control back to whatever called this
         if (this.practiceMode && typeof(this.onEndedPractice) === 'function') {
             // handle callback provided for end of practice phase
@@ -305,7 +305,7 @@ VisworldBlock.prototype = {
         //   3) shows the next image
 
         var _self = this;
-        
+
         // iterate over images in random order, assigning handlers
         var imgs = shuffle($('img.' + this.namespace + 'image'));
 
@@ -314,7 +314,7 @@ VisworldBlock.prototype = {
         $('#instructions')
             .html('<h3>Pictures and names</h3><p>Welcome to the experiment. First there will be a short familiarization phase. You will see a picture and its name.</p> <p>Please read the name and then click on the picture to see the next picture.</p>')
             .show();
-                
+
         $(imgs)
             .addClass('familiarizationImage')
             .map(function(i, img) {
@@ -333,7 +333,7 @@ VisworldBlock.prototype = {
                                                 $(imgs[i+1]).show();
                                                 $('#familiarizationText').html(imgs[i+1].id);
                                             }
-                                        });                        
+                                        });
                     });
 
         // on continue click, start familiarization by showing first stim
@@ -358,7 +358,7 @@ VisworldBlock.prototype = {
         var timeNearestFiveMins = Math.ceil(this.itemOrder.length/this.trialsPerMinute / 5)*5;
         $("#instructions")
             .html('<h3>Start of experiment</h3>'+
-                  '<p>These pictures and words will be used in the next phase of the experiment. First you will see four pictures and a green circle. When the green circle lights up, click on the circle. You will then hear a word. Please click on the picture that you hear.</p><p><strong>Please respond as quickly and as accurately as possible.</strong>  If you\'re not sure, please take your best guess. ' + 
+                  '<p>These pictures and words will be used in the next phase of the experiment. First you will see four pictures and a green circle. When the green circle lights up, click on the circle. You will then hear a word. Please click on the picture that you hear.</p><p><strong>Please respond as quickly and as accurately as possible.</strong>  If you\'re not sure, please take your best guess. ' +
                   '<p>  There are {0} trials, and you will have a chance to take breaks every {1} trials.  This part of the experiment should take about {2} minutes or less.  The progress bar at the top will show you how much you have done and how much remains.</p>'.format(numTrials, this.breakEvery, timeNearestFiveMins))
             .show();
 

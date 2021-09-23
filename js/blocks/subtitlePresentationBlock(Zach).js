@@ -148,7 +148,7 @@ SubtitlePresentationBlock.prototype = {
         resetPB("progressBar");
         $("#progressBar").show();
         $beep = $('<audio>')
-        $beep.attr("src", 'stimuli_soundcheck/beep.wav');
+        $beep.attr("src", 'JSEXP/sounds/beep.wav');
         // DEBUGGING: add button to force start of calibration block (skip preview)
     },
 

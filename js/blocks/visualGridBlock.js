@@ -170,14 +170,14 @@ VisualGridBlock.prototype = {
         $("<img />")
             .addClass('visualGrid')
             .attr('id', 'ready')
-            .attr('src', 'img/greenready.png')
+            .attr('src', 'JSEXP/img/greenready.png')
             .appendTo('#readyWaitContainer')
             .hide()
             .trigger('load');
         $("<img />")
             .addClass('visualGrid')
             .attr('id', 'wait')
-            .attr('src', 'img/greenwait.png')
+            .attr('src', 'JSEXP/img/greenwait.png')
             .appendTo('#readyWaitContainer')
             .hide()
             .trigger('load');

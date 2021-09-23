@@ -18,7 +18,7 @@
  *    If not, see <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>.
  *
  */
- 
+
  // an outgrowth of `newLabelingBlock`
 // PROBABLY SHOULDN'T BE USED WITH needsResp
 function newSubtitleBlock(params) {
@@ -100,7 +100,7 @@ function newSubtitleBlock(params) {
     if (typeof(subtitlePosition) === 'undefined') {
         subtitlePosition = "during";
     }
-    
+
     // install stimuli
     if (isArray(stimuliObj)) {
         // concatenate into one mega-object, and set for this block
@@ -148,16 +148,16 @@ newSubtitleBlock.prototype = {
     shouldPause: false, // if you want the trial to pause, eg to scold them
     myTimer: undefined,
     pressedSpace: false,
-    instructionTest: false,  
+    instructionTest: false,
     replacementCatchText: false,  // if text, will replace the instructions for catch trials
     catchMethod: 'none', //'none' (ignore catch trials), 'aud_keep' (no changes), 'red_text' (red text), 'aud_replace', (beeps instead of playing audio) 'aud_before' (plays beep before audio)
     subtitlePosition: 'during', // haven't really decided yet
-    
+
     // This is for the the gatekeeper
     gkThreshold: -1,  // -1 means no d' threshold
     dprimeCounter: {  // This keeps track of d'
     	"hits": 0, "misses": 0,
-    	"falseAlarms": 0, "correctRejects": 0    
+    	"falseAlarms": 0, "correctRejects": 0
     },
 
     run: function() {
@@ -227,23 +227,23 @@ newSubtitleBlock.prototype = {
                                     valToKey(this.respKeys, this.categories[1]) + '</span> for "' + this.categories[1] + '"');
         this.instructionText =  $("#taskInstructions").html();
         $("#taskInstructions").hide();
-        
+
         installPB("progressBar");
         resetPB("progressBar");
         $("#progressBar").show();
         if (this.catchMethod=="aud_replace" || this.catchMethod=="aud_before") {
             $beep = $('<audio>')
-            $beep.attr("src", 'stimuli_soundcheck/beep.wav');
+            $beep.attr("src", 'JSEXP/sounds/beep.wav');
         }
         // DEBUGGING: add button to force start of calibration block (skip preview)
         $('#buttons').append('<input type="button" onclick="calibrationBlock.next()" value="start calibration"></input>');
     },
-    
+
     isCatchTrial: function() {
         var is_catch_trial = typeof(this.stimuliObj.isCatch) != "undefined" && this.stimuliObj.isCatch[this.stims[this.n]] === 'Y';
         return is_catch_trial && this.catchMethod != "none";
     },
-    
+
 
     // Opens up to accept keystrokes
     openKeyCapture: function() {
@@ -255,7 +255,7 @@ newSubtitleBlock.prototype = {
         var _self = this;
         _self.keyCapture=false;
     },
-    
+
     handleResp: function(e) {
     	_self = this;
         $('#testStatus').html('keyup() detected: keycode = ' + e.which + ' (' +
@@ -269,13 +269,13 @@ newSubtitleBlock.prototype = {
                 	_self.dprimeCounter["falseAlarms"] = _self.dprimeCounter["falseAlarms"] + 1;
                     chastise_text = "Please only press the spacebar on a catch trial!";
                     $("#wrongAnsMessage").html(chastise_text);
-                    $("#wrongAnsMessage").show(); 
+                    $("#wrongAnsMessage").show();
                     this.shouldPause = true;
                 }
             } else {
                 chastise_text = "This is the <b>listening</b> task. Do not press anything but the spacebar, and only press that on the catch trials.";
                 $("#wrongAnsMessage").html(chastise_text);
-                $("#wrongAnsMessage").show(); 
+                $("#wrongAnsMessage").show();
                 this.shouldPause = true;
             }
             this.tResp = Date.now();
@@ -283,26 +283,26 @@ newSubtitleBlock.prototype = {
             this.currentKeyEvent = e;
         }
     },
-    
-    // handle end of trial 
+
+    // handle end of trial
     end: function() {
         _self = this;
         this.closeKeyCapture();
         $("#subtitle").empty();
         $("#CatchFeedback").hide();
-        
+
         // If you didn't respond to a catch trial
         if (_self.isCatchTrial() && _self.currentKeyEvent == "NORESP") {
         	_self.dprimeCounter["misses"] = _self.dprimeCounter["misses"] + 1;
             chastise_text = "That was a catch trial. Be sure to press the spacebar for these!";
             $("#wrongAnsMessage").html(chastise_text);
-            $("#wrongAnsMessage").show(); 
+            $("#wrongAnsMessage").show();
             _self.shouldPause = true;
-        } 
+        }
         if (!_self.isCatchTrial() && _self.currentKeyEvent == "NORESP") {
         	_self.dprimeCounter["correctRejects"] = _self.dprimeCounter["correctRejects"] + 1;
         }
-        
+
         // If you did something that requires pausing, pause for 3 seconds
         if (_self.shouldPause) {
             setTimeout(function(){
@@ -314,7 +314,7 @@ newSubtitleBlock.prototype = {
                 	"In the main part of the experiment, you'll see a warning every time you miss one of these trials.<br />"+
                 	"Whenever that happens, it's a reminder to pay more attention."
                     $("#wrongAnsMessage").html(try_again_text);
-                    $("#wrongAnsMessage").show(); 
+                    $("#wrongAnsMessage").show();
                     _self.n = 0;
                     resetPB("progressBar");
                     // Get rid of data you had written
@@ -334,7 +334,7 @@ newSubtitleBlock.prototype = {
             plusPB("progressBar", _self.pbIncrement);
             // record response
             _self.recordResp();
-        }        
+        }
     },
 
     // start next trial
@@ -344,19 +344,19 @@ newSubtitleBlock.prototype = {
         var dpC = _self.dprimeCounter;
         var dprime = calculateDPrime(dpC["hits"], dpC["misses"], dpC["falseAlarms"], dpC["correctRejects"]);
         console.log(dprime);
-        
+
         // some status information (hidden by default)
         $('#testStatus').append('<br />stims: ' + this.stims + ', n: ' + this.n);
         $('#testStatus').html('...wait');
         $("#wrongAnsMessage").hide();
-        
+
         var isCatch = _self.isCatchTrial();
         if (_self.replacementCatchText && isCatch) {
             $("#taskInstructions").html(_self.replacementCatchText);
         } else {
             $("#taskInstructions").html(_self.instructionText);
         }
-        
+
         // pause before next fixation cross appears
         console.log(_self.stims);
 
@@ -370,7 +370,7 @@ newSubtitleBlock.prototype = {
         if (isCatch && _self.catchMethod == "aud_before") {
             $beep[0].play();
         }
-        
+
         if (isCatch || this.subtitlePosition === "during" || this.subtitlePosition === "absent") {
             // Immediately plays
             setTimeout(function() {
@@ -379,7 +379,7 @@ newSubtitleBlock.prototype = {
                 $originalAudio = $('<audio>');
                 _self.tStartLoad = Date.now();
                 if (isCatch && _self.catchMethod == "aud_replace") {
-                    $originalAudio.attr("src", 'stimuli_soundcheck/beep.wav');
+                    $originalAudio.attr("src", 'JSEXP/sounds/beep.wav');
                 } else {
                     $originalAudio.attr("src", current);
                 }
@@ -389,10 +389,10 @@ newSubtitleBlock.prototype = {
                     _self.LoadTime = Date.now() - _self.tStartLoad;
                     aud_dur = $originalAudio[0].duration * 1000;
                     var total_trial_time = aud_dur*2 // the total amount of time until the next trial
-                    
+
                     $originalAudio[0].play();
                     // End of boilerplate ------------------------------------------------
-                
+
                     $originalAudio.on('play', function() {
                         $("#subtitle").text(_self.stimuliObj.subtitles[_self.stims[_self.n]]);
                         $("#subtitle").show();
@@ -402,11 +402,11 @@ newSubtitleBlock.prototype = {
                         }
                         _self.tStart = Date.now();
                         _self.openKeyCapture();
-                        
+
                         $originalAudio.on('ended', function() {
                             $("#subtitle").empty();
                             $("#subtitle").hide();
-                            
+
                             setTimeout(function() {
                                 _self.end();
                             }, aud_dur);
@@ -422,24 +422,24 @@ newSubtitleBlock.prototype = {
                 $originalAudio = $('<audio>');
                 _self.tStartLoad = Date.now();
                 if (isCatch && _self.catchMethod == "aud_replace") {
-                    $originalAudio.attr("src", 'stimuli_soundcheck/beep.wav');
+                    $originalAudio.attr("src", 'JSEXP/sounds/beep.wav');
                 } else {
                     $originalAudio.attr("src", current);
                 }
-                
+
                 var aud_dur;
                 $originalAudio.on("canplay", function() {
                     _self.LoadTime = Date.now() - _self.tStartLoad;
                     aud_dur = $originalAudio[0].duration * 1000;
                     var total_trial_time = aud_dur*2 // the total amount of time until the next trial
-                    
+
                     $originalAudio[0].play();
                     // End of boilerplate ------------------------------------------------
-                
+
                     $originalAudio.on('play', function() {
                     	_self.tStart = Date.now();
                         _self.openKeyCapture();
-                        
+
                     	setTimeout(function() {
                     		$("#subtitle").text(_self.stimuliObj.subtitles[_self.stims[_self.n]]);
 							$("#subtitle").show();
@@ -447,19 +447,19 @@ newSubtitleBlock.prototype = {
 								var og_text = $("#subtitle").text();
 								$("#subtitle").html('<span style="color:red">'+og_text+'</span>');
 							}
-							
+
 							setTimeout(function() {
 								$("#subtitle").empty();
 								$("#subtitle").hide();
 								_self.end();
-							
+
 							}, aud_dur);
                     	}, aud_dur);
                     });
                 });
             }, _self.ITI);  // waint until ITI done before next trial
         }
-        
+
 
         console.log("Start time:");
         console.log(_self.tStart);
@@ -478,18 +478,18 @@ newSubtitleBlock.prototype = {
         console.log($(this.respField).val());
        // $(this.auds).unbind('.' + this.namespace).height(0);
        // $(document).unbind('.' + this.namespace);
-       
+
        var dpC = this.dprimeCounter;
        var dprime = calculateDPrime(dpC["hits"], dpC["misses"], dpC["falseAlarms"], dpC["correctRejects"]);
-       
-       
+
+
        if (this.gkThreshold > 0 && dprime < this.gkThreshold) {
            // defined in exp3.js
            failed_dprime = true;
            console.log("DPRIME = "+dprime+", threshold = "+this.gkThreshold);
        }
-       
-       
+
+
         $(document).off();
         if (typeof(this.onEndedBlock) === 'function') {
             this.onEndedBlock();
@@ -523,7 +523,7 @@ newSubtitleBlock.prototype = {
                 url_str.push(encodeURIComponent(p) + "=" + encodeURIComponent(this.urlparams[p]));
             }
         url_str = url_str.join("&");
-        
+
         var _self = this;
         if (typeof(_self.stimuliObj.isCatch) != "undefined") {
             var iscatch = _self.stimuliObj.isCatch[_self.stims[_self.n]];
@@ -534,13 +534,13 @@ newSubtitleBlock.prototype = {
         if (responsefailure) {
             this.tResp = -1;
         }
-        
+
         var resp = [this.info(), e.which,
                     "", //empty string, since String.fromCharCode(e.which) might have been causing issues
                     iscatch, this.catchMethod, responsefailure,
                     this.tStart, this.tResp, this.tResp-this.tStart,
-                    workerid, condition, list_num, url_str, this.LoadTime].join();   
-        
+                    workerid, condition, list_num, url_str, this.LoadTime].join();
+
         // write info to form field
         if (this.n < this.stims.length) {
             $(this.respField).val($(this.respField).val() + resp + RESP_DELIM);
@@ -706,12 +706,10 @@ function calculateDPrime(n_hit, n_miss, n_fa, n_cr) {
   // Ratios
   var hit_rate = n_hit / (n_hit + n_miss);
   var fa_rate  = n_fa /  (n_fa + n_cr);
-  
+
   // Adjusted ratios
   var hit_rate_adjusted = (n_hit+0.5) / ((n_hit+0.5) + n_miss + 1);
   var fa_rate_adjusted  = (n_fa+0.5)  / ((n_fa+0.5) + n_cr + 1);
-  
+
   return (qnorm(hit_rate_adjusted) - qnorm(fa_rate_adjusted));
 }
-
-
