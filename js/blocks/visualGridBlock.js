@@ -108,11 +108,11 @@ function VisualGridBlock(params) {
 
     // add images to DOM
     for (image_name in this.images) {
-        $("<img />")
+        $('<img />')
             .addClass(this.namespace + 'image')
             .attr('id', image_name)
             .attr('src', this.images[image_name])
-            .load()
+            .trigger('load')
             .hide()
             .appendTo('#visualGridContainer');
     }
@@ -173,14 +173,14 @@ VisualGridBlock.prototype = {
             .attr('src', 'img/greenready.png')
             .appendTo('#readyWaitContainer')
             .hide()
-            .load();
+            .trigger('load');
         $("<img />")
             .addClass('visualGrid')
             .attr('id', 'wait')
             .attr('src', 'img/greenwait.png')
             .appendTo('#readyWaitContainer')
             .hide()
-            .load();
+            .trigger('load');
 
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -238,13 +238,14 @@ VisualGridBlock.prototype = {
     },
 
     handlePlay: function() {
-        console.log('in handle');
+        throwMessage('Playing stimulus (in handle).');
         $('.'+this.namespace + 'audio').trigger('play');
         this.waitForResp();
         this.tStart = Date.now();
     },
 
     showStimImages: function() {
+        throwMessage('Showing pictures.');
         var _self = this;
         var positions;
         if (this.randomizeImagePositions == true) {
@@ -257,7 +258,7 @@ VisualGridBlock.prototype = {
         $('.' + this.namespace + 'audio')
             .attr('id', 'trialAudio')
             .attr('src', this.stims.prefix + this.stims.filenames[this.itemOrder[this.n]])
-            .load();
+            .trigger('load');
 
         // Get the image mapping for the current trial
         var currentStimMapping = this.imageMapping[this.stims.image_selections[this.itemOrder[this.n]]];
@@ -271,11 +272,13 @@ VisualGridBlock.prototype = {
     },
 
     waitForResp: function() {
+        throwMessage('Waiting for response.');
         // if collecting a keyboard response, would turn on listening here
         this.clickCapture = true;
     },
 
     handleResp: function(e) {
+        throwMessage('Handle response.');
         if (this.clickCapture) {
             this.tResp = Date.now();
             this.clickCapture = false;
@@ -287,18 +290,22 @@ VisualGridBlock.prototype = {
     },
 
     info: function() {
-        // pull out stimulus file basename for current trial
-        var curStimSrc = this.stims.filenames[this.itemOrder[this.n]];
+        // // pull out stimulus file basename for current trial
+        // var curStimSrc = this.stims.filenames[this.itemOrder[this.n]];
+        // Go over the stimulus list fields, and extract information about the current trial
+        // from all (and only) fields that are objects (the arrays).
         var currentStimuliInfo = [];
-        for (param in this.stims) {
-            if (typeof this.stims[param] === 'object') {
-                currentStimuliInfo.push(this.stims[param][this.itemOrder[this.n]]);
+        for (v in this.stims) {
+            if (typeof this.stims[v] === 'object') {
+                // Extract the information for the present item
+                currentStimuliInfo.push(this.stims[v][this.itemOrder[this.n]]);
             }
         }
-        return [this.namespace, this.allowFeedback, this.n, this.itemOrder[this.n], currentStimuliInfo, gupo()].join();
+        return [this.namespace, this.allowFeedback, this.n, this.itemOrder[this.n], currentStimuliInfo].join();
     },
 
     recordResp: function(e) {
+        throwMessage('Record response.');
         var clickID, clickVWPos, clickVWx, clickVWy;
         clickID = e.target.id;                   // ID of element clicked
         clickVWPos = $(e.target).attr('vw_pos'); // vw_pos attr value of element clicked
@@ -311,6 +318,7 @@ VisualGridBlock.prototype = {
     },
 
     handleFeedback: function(e) {
+      throwMessage('Handle feedback.');
       var _self = this;
       var currentStimMapping = this.imageMapping[this.stims.image_selections[this.itemOrder[this.n]]];
       var delayEnd = this.ITI_responseToTrialEnd;
@@ -370,7 +378,7 @@ VisualGridBlock.prototype = {
         "Delay end of trial: " + delayEnd);
 
       setTimeout(function() {
-        _self.throwMessage("Ending trial at time " + Date.now());
+        throwMessage("Ending trial at time " + Date.now());
         _self.end(e); }, delayEnd);
     },
 
@@ -493,7 +501,8 @@ VisualGridBlock.prototype = {
                            $("#visualGridContainer").show();
                            _self.next();
                        });
-    }
+    },
+
 };
 
 
