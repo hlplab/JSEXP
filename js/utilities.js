@@ -61,7 +61,7 @@ function orderStimuli(reps, n, method) {
         if (typeof(n) !== "undefined") {
             reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n);
         } else {
-            throw "Must provide either vector of repetitions or number of stimuli";
+            throwMesssage("Must provide either vector of repetitions or number of stimuli.");
         }
     }
 
