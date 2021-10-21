@@ -21,12 +21,12 @@
 
 function setSliderTicks(){
     var $slider =  $('#slider');
-    var max =  $slider.slider("option", "max");    
+    var max =  $slider.slider("option", "max");
     var spacing =  100 / (max -1);
 
     $slider.find('.ui-slider-tick-mark').remove();
     for (var i = 0; i < max ; i++) {
-        $('<span class="ui-slider-tick-mark"></span>').css('left', (spacing * i) +  '%').appendTo($slider); 
+        $('<span class="ui-slider-tick-mark"></span>').css('left', (spacing * i) +  '%').appendTo($slider);
      }
 }
 
@@ -110,12 +110,12 @@ function LikertBlock(params) {
         console.log(stimuliObj);
         $('#continue').show();
     }
-    
+
     // create responses form element and append to form
     this.respField = $('<textArea id="' + namespace + 'Resp" ' +
                        'name="' + namespace + 'Resp" ></textArea>').appendTo('#mturk_form');
     $('#mturk_form').append('<br />');
-    
+
 }
 
 LikertBlock.prototype = {
@@ -134,7 +134,7 @@ LikertBlock.prototype = {
     onEndedBlock: undefined,
     pbIncrement: undefined,
     blockRandomizationMethod: undefined,
-    totalUniqueTrials: undefined, 
+    totalUniqueTrials: undefined,
     min: 1,
     max: 100,
     step: 1,
@@ -151,7 +151,7 @@ LikertBlock.prototype = {
         if (typeof this.reps === 'undefined')  {
             reps = this.stimuliObj.calibReps;
         } else {
-            reps = this.reps;    
+            reps = this.reps;
         }
 
         if (typeof this.blockReps !== 'undefined') {
@@ -170,7 +170,7 @@ LikertBlock.prototype = {
         _self.init();
        _self.next();
     },
-    
+
     init: function(opts) {
         console.log("In init");
         var _self = this;
@@ -178,7 +178,7 @@ LikertBlock.prototype = {
         if (_self.mediaType === "audio") {
             $('#miniVideoContainer').remove();
         };
-        
+
         console.log(_self.value, _self.step, _self.min, _self.max);
 
         $("#slider").slider({
@@ -197,7 +197,7 @@ LikertBlock.prototype = {
                 setSliderTicks();
             }
         });
-        
+
         $("#sliderVal").change(function () {
             var value = ui.value;
             console.log(_self.max);
@@ -210,7 +210,7 @@ LikertBlock.prototype = {
             $("#slider").slider("value", parseInt(value));
             _self.currentValue = value;
 
-        }); 
+        });
         $('#nextTrialSlider').click(function (event) {
             $("video.vidStimLikert").remove();
             _self.recordResp();
@@ -221,7 +221,7 @@ LikertBlock.prototype = {
         $("#minLabel").html(_self.minLabel);
         $("#maxLabel").html(_self.maxLabel);
         _self.totalUniqueTrials = _self.stimuliObj.filenames.length;
-        
+
         console.log("trials: " + _self.totalUniqueTrials);
         // initialize trial counter
         this.n = 0;
@@ -258,7 +258,7 @@ LikertBlock.prototype = {
             this.stims = this.stims.concat(pseudoRandomOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
-                
+
         ////////////////////////////////////////////////////////////////////////////////
         // Bind handlers for this block:
         // create handler to capture and process keyboard input, and bind to document
@@ -289,15 +289,15 @@ LikertBlock.prototype = {
                 this.currentValue = Math.max((this.currentValue - this.step), this.min);
                 $("#slider").slider('value', this.currentValue);
                 $("#sliderVal").val(this.currentValue);
-            
+
             }
             if (String.fromCharCode(e.which) === 'M') {
                 this.currentValue = Math.min((this.currentValue + this.step), this.max);
                 $("#slider").slider('value', this.currentValue);
                 $("#sliderVal").val(this.currentValue);
-            
+
             }
-            
+
             if (e.keyCode === 0 || e.keyCode === 32) {
                 $("video.vidStimLikert").remove();
                 this.recordResp();
@@ -315,7 +315,7 @@ LikertBlock.prototype = {
 
         $("#instructionsLower").show();
         $("#nextTrialSlider").hide();
-        
+
         var extension = "";
         if (_self.mediaType === "audio") {
             extension = ".wav";
@@ -346,7 +346,7 @@ LikertBlock.prototype = {
                 });
             }
         }, _self.ITI)
-        
+
     },
 
     // handle end of trial (called by key press handler)
@@ -380,7 +380,7 @@ LikertBlock.prototype = {
         $("#maxLabel").hide();
         $("#nextTrialSlider").hide();
         $(document).off();
-        $(document).trigger('endBlock_' + this.namespace + 
+        $(document).trigger('endBlock_' + this.namespace +
                             (this.practiceMode ? '.practice' : ''));
         if (this.practiceMode && typeof(this.onEndedPractice) === 'function') {
             console.log("WAH-racit");
@@ -395,8 +395,8 @@ LikertBlock.prototype = {
 
     // method to handle response. takes event object as input
     recordResp: function() {
-        
-        // format trial information 
+
+        // format trial information
         _self = this;
         this.urlparams = gupo();
         var workerid = this.urlparams['workerId'];
@@ -406,7 +406,7 @@ LikertBlock.prototype = {
         var ans;
         var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]],
              _self.min, _self.max, _self.minLabel, _self.maxLabel, _self.step, $("#sliderVal").val(), workerid].join();
-        // write info to form field            
+        // write info to form field
         //$('#calibrationResp').val($('#calibrationResp').val() + resp + RESP_DELIM);
         if (this.n < this.stims.length) {
             console.log("Writing resp:" + resp);
@@ -456,78 +456,6 @@ function valToKey(obj, v) {
         }
     }
     return(keys);
-}
-
-// DEPRECATED: now lives in "utilities.js"  will run w/ warning
-// function to pseduo-randomize stimuli lists.  takes either vector of repetitions for
-// each item, or (scalar) number of repetitions for each item and the length of the continuum.
-function pseudoRandomOrder(reps, n, method) {
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    // if reps is specified as a constant, convert to an array
-    if (typeof(reps) === "number" || reps.length == 1) {
-        if (typeof(n) !== "undefined") {
-            reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n);
-        } else {
-            throw "Must provide either vector of repetitions or number of stimuli";
-        }
-    }
-
-    // method of pseudorandomization
-    if (typeof(method) === 'undefined') {
-        method = 'extreme_early';
-    }
-
-    // pseudo-random order for stimuli: create blocks with one of
-    // each stimulus, shuffle within each block and shuffle order
-    // of blocks (only necessary because of non-uniform repetitions)
-    var repsRem = reps.slice(0);
-    var block = [];
-    var blocks = [];
-    do {
-        block = [];
-        for (var i=0; i<repsRem.length; i++) {
-            if (repsRem[i] > 0) {
-                block.push(i);
-                repsRem[i]--;
-            }
-        }
-        // randomize order of stimuli in THIS block
-        blocks.push(shuffle(block));
-    } while (block.length > 0);
-
-    // DON'T RANDOMIZE order of blocks, so that extreme stimuli are guaranteed
-    // to be more common early on
-    // ...and concatenate each shuffled block to list of trials
-    var stims = [];
-    switch(method) {
-    case 'extreme_early':
-        for (var i=0; i<blocks.length; i++) {
-            stims = stims.concat(blocks[i]);
-        }
-        break;
-    case 'extreme_late':
-        for (var i=blocks.length; i>0; i--) {
-            stims = stims.concat(blocks[i-1]);
-        }
-        break;
-    case 'shuffle':
-        blocks = shuffle(blocks);
-        for (var i=0; i<blocks.length; i++) {
-            stims = stims.concat(blocks[i]);
-        }
-        break;
-    default:
-        if (console) {console.log('ERROR: bad randomization method: ' + method);}
-        throw('bad randomization method: ' + method);
-    }
-
-    return(stims);
-}
-
-// Function to detect if object is an array, from http://stackoverflow.com/a/1058753
-function isArray(obj) {
-    return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
 // classical-esque class inheritance: sets prototype of prototype to superclass prototype
