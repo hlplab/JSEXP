@@ -74,12 +74,12 @@ function TranscriptionBlock(params) {
         console.log(stimuliObj);
         $('#continue').show();
     }
-    
+
     // create responses form element and append to form
     this.respField = $('<textArea id="' + namespace + 'Resp" ' +
                        'name="' + namespace + 'Resp" ></textArea>').appendTo('#mturk_form');
     $('#mturk_form').append('<br />');
-    
+
 }
 
 TranscriptionBlock.prototype = {
@@ -96,7 +96,7 @@ TranscriptionBlock.prototype = {
     onEndedBlock: undefined,
     pbIncrement: undefined,
     blockRandomizationMethod: undefined,
-    totalUniqueTrials: undefined, 
+    totalUniqueTrials: undefined,
     instructions: undefined,
     mediaType: "audio",
 
@@ -105,13 +105,13 @@ TranscriptionBlock.prototype = {
         _self.init();
        _self.next();
     },
-    
+
     init: function(opts) {
         console.log("In init");
         var _self = this;
-        
+
         _self.totalUniqueTrials = _self.stimuliObj.filenames.length;
-        
+
         console.log("trials: " + _self.totalUniqueTrials);
         // initialize trial counter
         this.n = 0;
@@ -124,8 +124,8 @@ TranscriptionBlock.prototype = {
             this.stims = this.stims.concat(pseudoRandomOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
-        //Move to next trial on click 
-        
+        //Move to next trial on click
+
         $(document).on('keyup.' + this.namespace, function(e) {_self.handleResp(e);});
         $(document).on('keydown.' + this.namespace, function(e) {_self.handleRespDown(e);});
 
@@ -133,7 +133,7 @@ TranscriptionBlock.prototype = {
             $originalAudio.remove();
             _self.recordResp();
         });
-                
+
         $("#instructionsLower").html(_self.instructions);
 
         // install, initialize, and show a progress bar (progressBar.js)
@@ -164,7 +164,7 @@ TranscriptionBlock.prototype = {
         $('#testStatus').html('...wait');
 
         $("#instructionsLower").show();
-        
+
         var extension = "";
         if (_self.mediaType === "audio") {
             extension = ".wav";
@@ -197,7 +197,7 @@ TranscriptionBlock.prototype = {
                 });
             }
         }, _self.ITI)
-        
+
     },
 
     // handle end of trial (called by key press handler)
@@ -236,17 +236,17 @@ TranscriptionBlock.prototype = {
 
     // method to handle response. takes event object as input
     recordResp: function() {
-        
-        // format trial information 
+
+        // format trial information
         _self = this;
         this.urlparams = gupo();
         var workerid = this.urlparams['workerId'];
         var transcript = $('#transcription').text();
         transcript = escapeHTML(transcript);
-        var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]], _self.stimuliObj.subtitles[_self.stims[_self.n]], 
+        var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]], _self.stimuliObj.subtitles[_self.stims[_self.n]],
             transcript,
             workerid].join();
-        // write info to form field            
+        // write info to form field
         //$('#calibrationResp').val($('#calibrationResp').val() + resp + RESP_DELIM);
         if (this.n < this.stims.length) {
             console.log("Writing resp:" + resp);
@@ -296,78 +296,6 @@ function valToKey(obj, v) {
         }
     }
     return(keys);
-}
-
-// DEPRECATED: now lives in "utilities.js"  will run w/ warning
-// function to pseduo-randomize stimuli lists.  takes either vector of repetitions for
-// each item, or (scalar) number of repetitions for each item and the length of the continuum.
-function pseudoRandomOrder(reps, n, method) {
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    // if reps is specified as a constant, convert to an array
-    if (typeof(reps) === "number" || reps.length == 1) {
-        if (typeof(n) !== "undefined") {
-            reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n);
-        } else {
-            throw "Must provide either vector of repetitions or number of stimuli";
-        }
-    }
-
-    // method of pseudorandomization
-    if (typeof(method) === 'undefined') {
-        method = 'extreme_early';
-    }
-
-    // pseudo-random order for stimuli: create blocks with one of
-    // each stimulus, shuffle within each block and shuffle order
-    // of blocks (only necessary because of non-uniform repetitions)
-    var repsRem = reps.slice(0);
-    var block = [];
-    var blocks = [];
-    do {
-        block = [];
-        for (var i=0; i<repsRem.length; i++) {
-            if (repsRem[i] > 0) {
-                block.push(i);
-                repsRem[i]--;
-            }
-        }
-        // randomize order of stimuli in THIS block
-        blocks.push(shuffle(block));
-    } while (block.length > 0);
-
-    // DON'T RANDOMIZE order of blocks, so that extreme stimuli are guaranteed
-    // to be more common early on
-    // ...and concatenate each shuffled block to list of trials
-    var stims = [];
-    switch(method) {
-    case 'extreme_early':
-        for (var i=0; i<blocks.length; i++) {
-            stims = stims.concat(blocks[i]);
-        }
-        break;
-    case 'extreme_late':
-        for (var i=blocks.length; i>0; i--) {
-            stims = stims.concat(blocks[i-1]);
-        }
-        break;
-    case 'shuffle':
-        blocks = shuffle(blocks);
-        for (var i=0; i<blocks.length; i++) {
-            stims = stims.concat(blocks[i]);
-        }
-        break;
-    default:
-        if (console) {console.log('ERROR: bad randomization method: ' + method);}
-        throw('bad randomization method: ' + method);
-    }
-
-    return(stims);
-}
-
-// Function to detect if object is an array, from http://stackoverflow.com/a/1058753
-function isArray(obj) {
-    return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
 // classical-esque class inheritance: sets prototype of prototype to superclass prototype
