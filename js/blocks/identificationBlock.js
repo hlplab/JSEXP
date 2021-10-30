@@ -412,6 +412,15 @@ IdentificationBlock.prototype = {
     },
 
     handleFeedback: function(e) {
+      var pressedKeyLabel = String.fromCharCode(e.which);
+      if (pressedKeyLabel === ' ') pressedKeyLabel = "SPACE";
+
+      var feedbackStringEnd = "\n\nMaking mistakes during practice is OK---that's why we have a practice phase. " +
+        "But remember to listen closely and respond based on whether or not the video contains a real word of English or " +
+        "not (except when the video has " + this.catchEventDescription + "). " +
+        "If you get too many responses wrong during the main part of the experiment we won't be able to use your data. " +
+        "\n\nPress OK to continue.";
+
       // End trial if no feedback is to be provided or if catch trial was correctly detected.
       // Alternatively, provide informative feedback.
       if (!this.provideFeedback || (this.catchAns && this.isCatchTrial)) {
@@ -419,25 +428,37 @@ IdentificationBlock.prototype = {
         return -1;
       } else if (!this.catchAns && this.isCatchTrial) {
         // Failure to catch catch trial
-        alert("Caution: there was " + this.catchEventDescription + ". Since this is the practice phase this won't affect whether we can use your data.\n\n" +
-        "But please note: if miss too many white dots during the main part of the experiment, we won't be able to use your data (a few accidental mistakes " +
-        "are ok even during the main part; we are all human). Press OK to continue.");
+        if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
+          // *AND* identification was wrong
+          alert("Caution: You missed that there was " + this.catchEventDescription + " in the video." +
+          'So you should have pressed "'  + this.catchKeyText + '". ' +
+          "(You pressed \"" + pressedKeyLabel + "\", indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\". " +
+          "This is also wrong since the video actually contained a '" + this.correctResponses[this.n] + "')." + feedbackStringEnd);
+        } else {
+          // and identification was right
+          alert("Caution: You missed that there was " + this.catchEventDescription + " in the video." +
+          'So you should have pressed "'  + this.catchKeyText + '". ' +
+          "(You pressed \"" + pressedKeyLabel + "\", correctly indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\"). " +
+          feedbackStringEnd);
+        }
+
         this.handleMistake(e);
+
       } else if (this.catchAns && !this.isCatchTrial) {
         // Response indicated catch trial but it's not a catch trial
-        alert("Caution: this video did not have " + this.catchEventDescription + " but you pressed \'" + String.fromCharCode(e.which) +
-        "\'. Since this is the practice phase this won't affect whether we can use your data.\n\nBut please note: if you press \'" +
-        String.fromCharCode(e.which) + "\' wrongly too often when there is no white dot during the main part of the experiment, we won't " +
-        "be able to use your data (a few accidental mistakes are ok even during the main part; we are all human). Press OK to continue.");
+        alert("Caution: You pressed \"" + pressedKeyLabel + "\", indicating that this video had " + this.catchEventDescription + ". " +
+        "But this video did not have " + this.catchEventDescription + ". Instead, you should have indicated that this video contained a \"" +
+        this.correctResponses[this.n] + "\"." + feedbackStringEnd);
+
         this.handleMistake(e);
+
       } else if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
         // Identification was wrong
-        alert("Caution: your response indicated that this was a \'" + this.respKeys[String.fromCharCode(e.which)] +
-        "\' but the correct answer would have been \'" + this.correctResponses[this.n] +
-        "\'. Since this is the practice phase this won't affect whether we can use your data.\n\nBut please note: if you get too many responses " +
-        "wrong during the main part of the experiment we won't be able to use your data (a few accidental mistakes are ok even during the main " +
-        "part; we are all human). Press OK to continue.");
+        alert("Caution: You pressed, \"" + pressedKeyLabel + "\", indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\". " +
+        "But the video actually contained a \"" + this.correctResponses[this.n] + "\"." + feedbackStringEnd);
+
         this.handleMistake(e);
+
       } else {
         // Everything was correct
         this.end(e);
@@ -449,6 +470,9 @@ IdentificationBlock.prototype = {
       if (!this.enforcePerfection) {
         this.end(e);
       } else {
+        // record response here since otherwise it won't be recorded (since trial won't be ended)
+        this.recordResp(e);
+
         alert("Since it is critical that you understand the task before you continue to the main part of the experiment, we will restart the practice " +
         "trials again. Press OK to continue.");
         // if mistakes should be recorded this would need to be added HERE.
