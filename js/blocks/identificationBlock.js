@@ -432,7 +432,7 @@ IdentificationBlock.prototype = {
 
         // If this was the correct response, provide positive feedback and end the trial
         if ((this.isCatchTrial && this.catchAns) || (!this.isCatchTrial && (this.respKeys[String.fromCharCode(e.which)] === this.correctResponses[this.n]))) {
-          feedbackString += "This is CORRECT. Click OK to continue.";
+          alert(feedbackString +  "This is CORRECT. Click OK to continue.");
           this.end(e);
           return -1;
         } else if (!this.isCatchTrial && this.catchAns) {
@@ -460,7 +460,7 @@ IdentificationBlock.prototype = {
         }
 
         alert(feedbackString + "\n\nMaking mistakes during practice is absolutely OK---that's why we have a practice phase. " +
-        "Remember to listen closely and respond based on whether or not the video contains a real word of English or " +
+        "Remember to listen closely and respond based on whether the video contains a real word of English or " +
         "not (except when the video has " + this.catchEventDescription + "). Press OK to continue.");
 
         this.handleMistake(e);
