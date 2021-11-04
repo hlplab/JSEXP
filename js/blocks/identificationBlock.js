@@ -447,13 +447,13 @@ IdentificationBlock.prototype = {
               ", the video also contained " + this.catchEventDescription + ". ";
           } else {
           // Subject missed catch trial *and* incorrectly identified stimulus
-            feedbackString += "This is INCORRECT. The video indeed contained a " + this.correctResponses[this.n] +
+            feedbackString += "This is INCORRECT. The video contained a " + this.correctResponses[this.n] +
             ", not a " + this.respKeys[String.fromCharCode(e.which)] + ". But it also contained " + this.catchEventDescription + ". ";
           }
           feedbackString += 'On such trials like this one, you should press "' + this.catchKeyText + '".';
         } else if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
           // Subject correctly handled catch trial *but* incorrectly identified stimulus
-          feedbackString += "This is INCORRECT. The video indeed contained a " + this.correctResponses[this.n] + ". " +
+          feedbackString += "This is INCORRECT. The video contained a " + this.correctResponses[this.n] + ". " +
             'On trials like this one, you should press "' + valToKey(this.respKeys, this.correctResponses[this.n]) + ".";
         } else {
           throwError("Some key event occurred that was not foreseen.");
