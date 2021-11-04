@@ -412,56 +412,58 @@ IdentificationBlock.prototype = {
     },
 
     handleFeedback: function(e) {
-      var pressedKeyLabel = String.fromCharCode(e.which);
-      if (pressedKeyLabel === ' ') pressedKeyLabel = "SPACE";
-
-      var feedbackStringEnd = "\n\nMaking mistakes during practice is OK---that's why we have a practice phase. " +
-        "But remember to listen closely and respond based on whether or not the video contains a real word of English or " +
-        "not (except when the video has " + this.catchEventDescription + "). " +
-        "If you get too many responses wrong during the main part of the experiment we won't be able to use your data. " +
-        "\n\nPress OK to continue.";
-
-      // End trial if no feedback is to be provided or if catch trial was correctly detected.
-      // Alternatively, provide informative feedback.
-      if (!this.provideFeedback || (this.catchAns && this.isCatchTrial)) {
+      // If no feedback is to be provided, end the trial
+      if (!this.provideFeedback) {
         this.end(e);
         return -1;
-      } else if (!this.catchAns && this.isCatchTrial) {
-        // Failure to catch catch trial
-        if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
-          // *AND* identification was wrong
-          alert("Caution: You missed that there was " + this.catchEventDescription + " in the video." +
-          'So you should have pressed "'  + this.catchKeyText + '". ' +
-          "(You pressed \"" + pressedKeyLabel + "\", indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\". " +
-          "This is also wrong since the video actually contained a '" + this.correctResponses[this.n] + "')." + feedbackStringEnd);
+      } else {
+      // Feedback should be provided, so determine what that feedback ought to be
+        var pressedKeyLabel = String.fromCharCode(e.which);
+        if (pressedKeyLabel === ' ') pressedKeyLabel = "SPACE";
+
+        // Determine what key response was and what that indicates.
+        var feedbackString = "You pressed \"" + pressedKeyLabel + "\", indicating that this video contained ";
+        if (this.catchAns) {
+          feedbackString += this.catchEventDescription;
         } else {
-          // and identification was right
-          alert("Caution: You missed that there was " + this.catchEventDescription + " in the video." +
-          'So you should have pressed "'  + this.catchKeyText + '". ' +
-          "(You pressed \"" + pressedKeyLabel + "\", correctly indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\"). " +
-          feedbackStringEnd);
+          feedbackString += this.respKeys[String.fromCharCode(e.which)];
+        }
+        feedbackString += ". ";
+
+        // If this was the correct response, provide positive feedback and end the trial
+        if ((this.isCatchTrial && this.catchAns) || (!this.isCatchTrial && (this.respKeys[String.fromCharCode(e.which)] === this.correctResponses[this.n]))) {
+          feedbackString += "This is CORRECT. Click OK to continue.";
+          this.end(e);
+          return -1;
+        } else if (!this.isCatchTrial && this.catchAns) {
+        // Subject wrongly indicated a catch trial
+          feedbackString += "But this is INCORRECT: the video did NOT contain " + this.catchEventDescription +
+            '. You should have pressed "' + valToKey(this.respKeys, this.correctResponses[this.n]) +
+            '" to indicate that the video contained a ' + this.correctResponses[this.n] + ". ";
+        } else if (this.isCatchTrial && !this.catchAns) {
+          // Subject missed catch trial but correctly identified stimulus
+          if (this.respKeys[String.fromCharCode(e.which)] === this.correctResponses[this.n]) {
+            feedbackString += "This is NOT QUITE CORRECT. While the video indeed contained a " + this.correctResponses[this.n] +
+              ", the video also contained " + this.catchEventDescription + ". ";
+          } else {
+          // Subject missed catch trial *and* incorrectly identified stimulus
+            feedbackString += "This is INCORRECT. The video indeed contained a " + this.correctResponses[this.n] +
+            ", not a " + this.respKeys[String.fromCharCode(e.which)] + ". But it also contained " + this.catchEventDescription + ". ";
+          }
+          feedbackString += 'On such trials like this one, you should press "' + this.catchKeyText + '".';
+        } else if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
+          // Subject correctly handled catch trial *but* incorrectly identified stimulus
+          feedbackString += "This is INCORRECT. The video indeed contained a " + this.correctResponses[this.n] + ". " +
+            'On trials like this one, you should press "' + valToKey(this.respKeys, this.correctResponses[this.n]) + ".";
+        } else {
+          throwError("Some key event occurred that was not foreseen.");
         }
 
-        this.handleMistake(e);
-
-      } else if (this.catchAns && !this.isCatchTrial) {
-        // Response indicated catch trial but it's not a catch trial
-        alert("Caution: You pressed \"" + pressedKeyLabel + "\", indicating that this video had " + this.catchEventDescription + ". " +
-        "But this video did not have " + this.catchEventDescription + ". Instead, you should have indicated that this video contained a \"" +
-        this.correctResponses[this.n] + "\"." + feedbackStringEnd);
+        alert(feedbackString + "\n\nMaking mistakes during practice is absolutely OK---that's why we have a practice phase. " +
+        "Remember to listen closely and respond based on whether or not the video contains a real word of English or " +
+        "not (except when the video has " + this.catchEventDescription + "). Press OK to continue.");
 
         this.handleMistake(e);
-
-      } else if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
-        // Identification was wrong
-        alert("Caution: You pressed, \"" + pressedKeyLabel + "\", indicating that this was a \"" + this.respKeys[String.fromCharCode(e.which)] + "\". " +
-        "But the video actually contained a \"" + this.correctResponses[this.n] + "\"." + feedbackStringEnd);
-
-        this.handleMistake(e);
-
-      } else {
-        // Everything was correct
-        this.end(e);
       }
     },
 
@@ -473,9 +475,9 @@ IdentificationBlock.prototype = {
         // record response here since otherwise it won't be recorded (since trial won't be ended)
         this.recordResp(e);
 
-        alert("Since it is critical that you understand the task before you continue to the main part of the experiment, we will restart the practice " +
-        "trials again. Press OK to continue.");
-        // if mistakes should be recorded this would need to be added HERE.
+        alert("Since it is important that you understand your task before you continue to the main part of the experiment, " +
+          "we will restart the practice phase. This will give you additional time to practice. Press OK to continue.");
+
         $('video').eq(0).remove();
         $('audio').eq(0).remove();
 
