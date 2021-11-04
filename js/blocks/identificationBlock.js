@@ -403,8 +403,7 @@ IdentificationBlock.prototype = {
           } else if (!this.stimulusFinished && this.keyCapture) {
             this.stimulusFinished = true; // play 'please wait until end of stimulus' message only once
 
-            alert('Please wait until the video has finished playing before you respond (except when you see ' +
-                  this.catchEventDescription + '--in that case, press "' + this.catchKeyText + '").\n\n' +
+            alert('Please wait until the video has finished playing before you respond.\n\n' +
                   'Click OK and then respond again.');
           }
         }
