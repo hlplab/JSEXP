@@ -144,7 +144,7 @@ InstructionsSubsectionsBlock.prototype = {
         // clicking the "next" button hides the current section and shows the next
         // click on checkbox advances to next item
         $('.instructionlist :checkbox, .instructionbutton')
-            .on('click', function(e){
+            .on('click', function(e) {
                     e.stopPropagation();
                     $(this).parents('.listcontent').hide(500);
                     $(this).parents('li.instructionlistitem')
@@ -154,8 +154,8 @@ InstructionsSubsectionsBlock.prototype = {
                         .show(500, function(){
                                   var pos = $(this).parents('.instructionlistitem').offset();
                                   $('html,body').animate({scrollTop: pos.top}, 500);
-                              });
-                });
+                        });
+            });
 
         // apply clicks anywhere in the checkbox label to the checkbox.
         $('#instructions p.instructioncheckbox').on('click', function(e){

@@ -100,23 +100,25 @@ function pseudoRandomOrder(reps, n, method) {
         }
     } while (block.length > 0);
 
-
-
-    // DON'T RANDOMIZE order of blocks, so that extreme stimuli are guaranteed
-    // to be more common early on
-    // ...and concatenate each shuffled block to list of trials
+    // concatenate each shuffled block to list of trials
     var stims = [];
     switch(method) {
+      // DON'T randomize order of blocks, so that extreme stimuli are guaranteed
+      // to be more common early on
       case 'extreme_early':
         for (var i=0; i<blocks.length; i++) {
             stims = stims.concat(blocks[i]);
         }
         break;
+        // DON'T randomize order of blocks, so that extreme stimuli are guaranteed
+        // to be more common later on
       case 'extreme_late':
         for (var i=blocks.length; i>0; i--) {
             stims = stims.concat(blocks[i-1]);
         }
         break;
+        // RANDOMIZE order of blocks, so that extreme stimuli are guaranteed
+        // to be more common early on
       case 'shuffle_blocks':
         blocks = shuffle(blocks);
         for (var i=0; i<blocks.length; i++) {
@@ -233,7 +235,7 @@ function getFromPapa(parsed, columnHeader) {
 // strip off everything but the filename tail from an absolute URL (like that
 // returned by video.currentSrc)
 function absURLtoFilename(url) {
-    //FIXME: JavaScript Lint and Vim's syntax highlighter are both confused
+    // FIXME: JavaScript Lint and Vim's syntax highlighter are both confused
     // by this regex. Something is probably wrong with it.
     // Should it be?: /[^\/]*$/
     return /[^/]*$/.exec(url);
@@ -250,67 +252,3 @@ String.prototype.format = function() {
     ;
   });
 };
-
-
-////////////////////////////////////////////////////////////////////////////////
-// GUI/helper things
-// display a "continue" button which executes the given function
-function continueButton(fcn, validateFcn) {
-    $("#continue")
-        .show()
-        .unbind('click.cont')
-        .bind('click.cont', function() {
-                  if (typeof(validateFcn) !== 'function' ||
-                      typeof(validateFcn) === 'function' && validateFcn())
-                  {
-                      $(this).unbind('click.cont');
-                      $(this).hide();
-                      fcn();
-                  }
-              });
-}
-
-function continueButtonHidden(fcn, validateFcn) {
-    $("#continue")
-        .hide()
-        .unbind('click.cont')
-        .bind('click.cont', function() {
-                  if (typeof(validateFcn) !== 'function' ||
-                      typeof(validateFcn) === 'function' && validateFcn())
-                  {
-                      $(this).unbind('click.cont');
-                      $(this).hide();
-                      fcn();
-                  }
-              });
-}
-
-// collect a keyboard response, with optional timeout
-function collect_keyboard_resp(fcn, keys, to, tofcn) {
-    var namespace = '._resp' + (new Date()).getTime();
-    $(document).bind('keyup' + namespace, function(e) {
-        if (!keys || keys.indexOf(String.fromCharCode(e.which)) != -1) {
-            $(document).unbind(namespace);
-            fcn(e);
-            e.stopImmediatePropagation();
-            return false;
-        } else {
-            return true;
-        }
-    });
-
-    if (typeof tofcn !== 'undefined') {
-        $(document).bind('to' + namespace, function() {
-                             $(document).unbind(namespace);
-                             tofcn();
-                         });
-    }
-
-    if (typeof to !== 'undefined') {
-        // timeout response after specified time and call function if it exists
-        setTimeout(function(e) {
-                       $(document).trigger('to' + namespace);
-                       $(document).unbind(namespace);
-                   }, to);
-    }
-}

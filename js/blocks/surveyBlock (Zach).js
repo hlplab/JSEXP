@@ -16,15 +16,15 @@
  *    You should have received a copy of the GNU Lesser General Public License
  *    along with this program.
  *    If not, see <http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>.
- * 
+ *
  */
- 
+
  /*
   * THIS BLOCK IS JUST A COMPLETE HACK!
   *
   */
- 
- 
+
+
 function surveyBlock(params) {
     // process parameters
     var stimuliObj, instructions, namespace, css_stim_class;
@@ -132,20 +132,20 @@ surveyBlock.prototype = {
         '<input id="sb_audio_stall_some" name="survey_block_q" type="radio" value="some"/><label for="sb_audio_stall_some">Yes, a handful of times.</label><br/>' +
         '<input id="sb_audio_stall_few" name="survey_block_q" type="radio" value="few"/><label for="sb_audio_stall_few">Yes, once or twice.</label><br/>' +
         '<input id="sb_audio_stall_no" name="survey_block_q" type="radio" value="no"/><label for="sb_audio_stall_no">No, they all played smoothly.</label><br/>',
-        
+
         '<p name="bilingual">Can you understand any language other than English?</p>' +
         '<input id="sb_ml_yes" name="survey_block_q" type="radio" value="yes"/><label for="sb_ml_yes">Yes.</label><br/>' +
         '<input id="sb_ml_slight" name="survey_block_q" type="radio" value="slight"/><label for="sb_ml_slight">At <em>most</em> I would struggle if listening to a normal conversation.</label><br/>' +
         '<input id="sb_ml_no" name="survey_block_q" type="radio" value="no"/><label for="sb_ml_no">No.</label><br/>',
-        
+
         '<p>What kind of audio equipment did you use for the experiment? Be honest. Your response will not influence your payment.</p>' +
         '<input id="sb_audio_type_in-ear" name="survey_block_q" type="radio" value="in-ear"/><label for="sb_audio_type_in-ear">In-ear headphones</label><br/>' +
         '<input id="sb_audio_type_over-ear" name="survey_block_q" type="radio" value="over-ear"/><label for="sb_audio_type_over-ear">Over-the-ear headphones</label><br/>' +
         '<input id="sb_audio_type_computer speakers" name="survey_block_q" type="radio" value="computer speakers"/><label for="sb_audio_type_computer speakers">Laptop Speakers</label><br/>' +
         '<input id="sb_audio_type_external" name="survey_block_q" type="radio" value="external"/><label for="sb_audio_type_external">External Speakers</label><br/>',
-        
-        '<p>Did you take this experiment in a quiet location? Be honest. Your response will not influence your payment.</p>' +     
-        '<input id="sb_location_yes" name="survey_block_q" type="radio" value="yes"/><label for="sb_location_yes">Yes.</label><br/>' + 
+
+        '<p>Did you take this experiment in a quiet location? Be honest. Your response will not influence your payment.</p>' +
+        '<input id="sb_location_yes" name="survey_block_q" type="radio" value="yes"/><label for="sb_location_yes">Yes.</label><br/>' +
         '<input id="sb_location_no"  name="survey_block_q" type="radio" value="no" /><label for="sb_location_no">No.</label><br/>'
     ],
 
@@ -165,23 +165,23 @@ surveyBlock.prototype = {
         console.log(this.ITI);
         ////////////////////////////////////
         /// Header and footer
-        var q_head1 = '<div class="blocksurvey" id="XXXX" style="width:600px;margin-left:auto;margin-right:auto;">' + 
+        var q_head1 = '<div class="blocksurvey" id="XXXX" style="width:600px;margin-left:auto;margin-right:auto;">' +
                      '<div class="survey_question_section" id="';
         var q_head2 = '" style="display:visible">';
         var q_foot = '<input class="moveOnSurveyBlock" id="SurveyBlockContinue" name="Continue" type="button" value="Continue" style="display:block;"/>' +
                      '</div></div>';
-                     
+
         // add them on, along with the names
-        for (var i = 0, length = _self.question_list.length; i < length; i++) { 
-            this.question_list[i] = q_head1 + this.question_names[i] + q_head2 + 
+        for (var i = 0, length = _self.question_list.length; i < length; i++) {
+            this.question_list[i] = q_head1 + this.question_names[i] + q_head2 +
                                     this.question_list[i] + q_foot
         }
         $("#subtitle").html('');
         $("#subtitle").empty();
         $("#subtitle").html(this.question_list[this.n]);
         $("#subtitle").hide();
-        ///////////////////////////////////////////        
-        
+        ///////////////////////////////////////////
+
         installPB("progressBar");
         resetPB("progressBar");
         $("#progressBar").show();
@@ -190,7 +190,7 @@ surveyBlock.prototype = {
     waitForResp: function() {
         var _self = this;
         $("#SurveyBlockContinue").on('click', function(e){console.log("AAAAAA"); _self.handleResp();});
-        _self.myTimer = setTimeout(function() {        
+        _self.myTimer = setTimeout(function() {
             _self.tResp = -1;
             _self.end(["NORESP", document.getElementsByClassName('survey_question_section')[0]]);
             }, _self.timeoutMS);
@@ -203,10 +203,10 @@ surveyBlock.prototype = {
             for (var i = 0, length = radios.length; i < length; i++) {
               if (radios[i].checked) {
                 var this_resp = [radios[i].value, document.getElementsByClassName('survey_question_section')[0]];
-                
+
                 this.tResp = Date.now();
                 clearTimeout(this.myTimer);
-                
+
                 this.end(this_resp);
                 // only one radio can be logically checked, don't check the rest
                 break;
@@ -278,12 +278,12 @@ surveyBlock.prototype = {
                 url_str.push(encodeURIComponent(p) + "=" + encodeURIComponent(this.urlparams[p]));
             }
         url_str = url_str.join("&");
-        
-        var _self = this;        
+
+        var _self = this;
         var resp = [this.info(), e[1], e[0],
                     this.tStart, this.tResp, this.tResp-this.tStart,
                     workerid, condition, list_num, url_str].join();
-        
+
         // Does the response contain a bad answer?
         var cur_q = _self.question_names[_self.n];
         var cur_bad = _self.bad_answer_dictionary[cur_q];
@@ -311,36 +311,6 @@ surveyBlock.prototype = {
 // link up via __super__ to superclass, etc.
 extend(TestBlock, surveyBlock);
 
-
-
-//+ Jonas Raoni Soares Silva
-//@ http://jsfromhell.com/array/shuffle [rev. #1]
-//  shuffle the input array
-// DEPRECATED: use version in utilities.js
-var shuffle = function(v){
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-    return v;
-};
-
-// Some vector math helper functions (get max, min, range, and sum of a numeric Array)
-Array.max = function( array ){
-    return Math.max.apply( Math, array );
-};
-Array.min = function( array ){
-    return Math.min.apply( Math, array );
-};
-Array.range = function(array) {
-    return Array.max(array) - Array.min(array);
-};
-Array.prototype.sum = function() {
-    var s=0;
-    for (var i=0; i<this.length; i++) {
-        s += this[i];
-    };
-    return(s)
-};
 
 // reverse map lookup (get key given value)
 function valToKey(obj, v) {
@@ -374,4 +344,3 @@ function validateRespKeys(respKeys, categories) {
     }
     return true;
 }
-

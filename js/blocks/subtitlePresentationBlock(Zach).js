@@ -556,35 +556,6 @@ SubtitlePresentationBlock.prototype = {
 };
 
 
-//+ Jonas Raoni Soares Silva
-//@ http://jsfromhell.com/array/shuffle [rev. #1]
-//  shuffle the input array
-// DEPRECATED: use version in utilities.js
-var shuffle = function(v){
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-    return v;
-};
-
-// Some vector math helper functions (get max, min, range, and sum of a numeric Array)
-Array.max = function( array ){
-    return Math.max.apply( Math, array );
-};
-Array.min = function( array ){
-    return Math.min.apply( Math, array );
-};
-Array.range = function(array) {
-    return Array.max(array) - Array.min(array);
-};
-Array.prototype.sum = function() {
-    var s=0;
-    for (var i=0; i<this.length; i++) {
-        s += this[i];
-    };
-    return(s)
-};
-
 // reverse map lookup (get key given value)
 function valToKey(obj, v) {
     var keys = [];

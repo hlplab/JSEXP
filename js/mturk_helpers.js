@@ -58,36 +58,6 @@ function decode(strToDecode)
   return unescape(encoded.replace(/\+/g,  " "));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Some handlers for specific URL parameters
-// global variable for resp keys map
-var respKeyMap;
-
-function setRespKeys(params, categories) {
-    // default to B/D categories
-    if (typeof categories === 'undefined') {
-        categories = ['B', 'D'];
-    }
-
-    if (params['respKeys']) {
-        //var keys = gup('respKeys');
-        var keys = params['respKeys'];
-        // value should be of the form Bkey,Dkey
-        if (/^[A-Z],[A-Z]$/.exec(keys.toUpperCase()) && keys[0] != keys[2]) {
-            keys = keys.toUpperCase().split(',');
-            respKeyMap = {};
-            respKeyMap[keys[0]] = categories[0];
-            $("#bKey").html(keys[0]);
-            respKeyMap[keys[1]] = categories[1];
-            $("#dKey").html(keys[1]);
-            throwMessage('Setting response key map to ' + keys[0] + '-->' + categories[0] +
-                                      ', ' + keys[1] + '-->' + categories[1]);
-        } else {
-            $("#errors").val($("#errors").val() + "badRespKeys");
-            throwError("bad response key parameter: " + gup('respKeys'));
-        }
-    }
-}
 
 var previewMode;
 function checkPreview(params) {
@@ -232,4 +202,100 @@ var throwWarning = function(text) {
 
 var throwError = function(text) {
   throwMessage('ERROR: ' + text);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Some handlers for specific URL parameters
+// global variable for resp keys map
+var respKeyMap;
+
+function setRespKeys(params, categories) {
+    // default to B/D categories
+    if (typeof categories === 'undefined') {
+        categories = ['B', 'D'];
+    }
+
+    if (params['respKeys']) {
+        //var keys = gup('respKeys');
+        var keys = params['respKeys'];
+        // value should be of the form Bkey,Dkey
+        if (/^[A-Z],[A-Z]$/.exec(keys.toUpperCase()) && keys[0] != keys[2]) {
+            keys = keys.toUpperCase().split(',');
+            respKeyMap = {};
+            respKeyMap[keys[0]] = categories[0];
+            $("#bKey").html(keys[0]);
+            respKeyMap[keys[1]] = categories[1];
+            $("#dKey").html(keys[1]);
+            throwMessage('Setting response key map to ' + keys[0] + '-->' + categories[0] +
+                                      ', ' + keys[1] + '-->' + categories[1]);
+        } else {
+            $("#errors").val($("#errors").val() + "badRespKeys");
+            throwError("bad response key parameter: " + gup('respKeys'));
+        }
+    }
+}
+
+// collect a keyboard response, with optional timeout
+function collect_keyboard_resp(fcn, keys, to, tofcn) {
+    var namespace = '._resp' + (new Date()).getTime();
+    $(document).bind('keyup' + namespace, function(e) {
+        if (!keys || keys.indexOf(String.fromCharCode(e.which)) != -1) {
+            $(document).unbind(namespace);
+            fcn(e);
+            e.stopImmediatePropagation();
+            return false;
+        } else {
+            return true;
+        }
+    });
+
+    if (typeof tofcn !== 'undefined') {
+        $(document).bind('to' + namespace, function() {
+                             $(document).unbind(namespace);
+                             tofcn();
+                         });
+    }
+
+    if (typeof to !== 'undefined') {
+        // timeout response after specified time and call function if it exists
+        setTimeout(function(e) {
+                       $(document).trigger('to' + namespace);
+                       $(document).unbind(namespace);
+                   }, to);
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// GUI/helper things
+// display a "continue" button which executes the given function
+function continueButton(fcn, validateFcn) {
+    $("#continue")
+        .show()
+        .unbind('click.cont')
+        .bind('click.cont', function() {
+                  if (typeof(validateFcn) !== 'function' ||
+                      typeof(validateFcn) === 'function' && validateFcn())
+                  {
+                      $(this).unbind('click.cont');
+                      $(this).hide();
+                      fcn();
+                  }
+              });
+}
+
+function continueButtonHidden(fcn, validateFcn) {
+    $("#continue")
+        .hide()
+        .unbind('click.cont')
+        .bind('click.cont', function() {
+                  if (typeof(validateFcn) !== 'function' ||
+                      typeof(validateFcn) === 'function' && validateFcn())
+                  {
+                      $(this).unbind('click.cont');
+                      $(this).hide();
+                      fcn();
+                  }
+              });
 }
