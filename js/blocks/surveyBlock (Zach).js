@@ -45,8 +45,11 @@ function surveyBlock(params) {
         case 'blockReps':
             this.blockReps = params[p];
             break;
-        case 'blockRandomizationMethod':
-            this.blockRandomizationMethod = params[p];
+        case 'stimOrderMethod':
+            this.stimOrderMethod = params[p];
+            break;
+        case 'blockOrderMethod':
+            this.blockOrderMethod = params[p];
             break;
         case 'ITI':
             this.ITI = params[p];
@@ -115,7 +118,8 @@ surveyBlock.prototype = {
     respField: undefined,
     onEndedBlock: undefined,
     pbIncrement: undefined,
-    blockRandomizationMethod: undefined,
+    stimOrderMethod: 'shuffle_within_blocks',
+    blockOrderMethod: 'shuffle',
     timeoutMS: 99999999999, // a bit hacky
     myTimer: undefined,
     isBlocked: false,

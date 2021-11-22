@@ -46,8 +46,11 @@ function IdentificationBlock(params) {
         case 'blockReps':
             this.blockReps = params[p];
             break;
-        case 'blockRandomizationMethod':
-            this.blockRandomizationMethod = params[p];
+        case 'stimOrderMethod':
+            this.stimOrderMethod = params[p];
+            break;
+        case 'blockOrderMethod':
+            this.blockOrderMethod = params[p];
             break;
         case 'ITI':
             this.ITI = params[p];
@@ -154,7 +157,8 @@ IdentificationBlock.prototype = {
     respField: undefined,
     onEndedBlock: undefined,
     pbIncrement: undefined,
-    blockRandomizationMethod: undefined,
+    stimOrderMethod: 'shuffle_within_blocks',
+    blockOrderMethod: 'shuffle',
 
     getTotalReps: function() {
         var reps;
@@ -269,7 +273,7 @@ IdentificationBlock.prototype = {
 
         this.stims = [];
         for (var br = 0; br < this.blockReps; br++) {
-            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.stimuliObj.continuum.length, this.blockRandomizationMethod));
+            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.stimuliObj.continuum.length, this.blockstimOrderMethod, this.block.blockOrderMethod));
         }
 
         // get correct responses for (ordered) stimuli

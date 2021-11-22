@@ -129,8 +129,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
         break;
       // DON'T randomize order of blocks, so that blocks with many stimuli come
       // last
-      case 'reverse_block_order':
-      case 'extreme_late':
+      case 'large_blocks_last':
         for (var i=blocks.length; i>0; i--) {
             stims = stims.concat(blocks[i-1]);
         }

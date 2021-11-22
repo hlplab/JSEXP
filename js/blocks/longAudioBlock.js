@@ -42,8 +42,11 @@ function LongAudioBlock(params) {
         case 'blockReps':
             this.blockReps = params[p];
             break;
-        case 'blockRandomizationMethod':
-            this.blockRandomizationMethod = params[p];
+        case 'stimOrderMethod':
+            this.stimOrderMethod = params[p];
+            break;
+        case 'blockOrderMethod':
+            this.blockOrderMethod = params[p];
             break;
         case 'ITI':
             this.ITI = params[p];
@@ -112,7 +115,8 @@ LongAudioBlock.prototype = {
     respField: undefined,
     onEndedBlock: undefined,
     pbIncrement: undefined,
-    blockRandomizationMethod: undefined,
+    stimOrderMethod: 'shuffle_within_blocks',
+    blockOrderMethod: 'shuffle',
     totalUniqueTrials: undefined,
     instructions: undefined,
     mediaType: "audio",
@@ -143,7 +147,7 @@ LongAudioBlock.prototype = {
 
         this.stims = [];
         for (var br = 0; br < this.blockReps; br++) {
-            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
+            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.totalUniqueTrials, this.blockstimOrderMethod, this.block.blockOrderMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
         //Move to next trial on click

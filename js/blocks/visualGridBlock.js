@@ -75,8 +75,11 @@ function VisualGridBlock(params) {
         case 'showFamiliarization':
             this.showFamiliarization = params[p];
             break;
-        case 'randomizationMethod':
-            this.randomizationMethod = params[p];
+        case 'stimOrderMethod':
+            this.stimOrderMethod = params[p];
+            break;
+        case 'blockOrderMethod':
+            this.blockOrderMethod = params[p];
             break;
         case 'debugMode':
             this.debugMode = params[p];
@@ -133,7 +136,8 @@ VisualGridBlock.prototype = {
     allowFeedback: false,
     autoAdvanceReady: false,
     itemOrder: undefined,       // replaces this.stims in LabelingBlock, indexed by n, indexes stimuli
-    randomizationMethod: 'shuffle',
+    stimOrderMethod: 'shuffle_within_blocks',
+    blockOrderMethod: 'shuffle',
     randomizeImagePositions: true,
     imagePositions: ['topleft', 'topright', 'bottomleft', 'bottomright'],
     ITI_trialStartToImages: 1000,  // time from trial start to showing pictures
@@ -185,7 +189,7 @@ VisualGridBlock.prototype = {
 
         ////////////////////////////////////////////////////////////////////////////////
         // construct list of items and randomize trial order
-        this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.randomizationMethod);
+        this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.block.blockOrderMethod);
 
         // If trials are NOT to auto-advance from the ready to play state,
         // install "start trial" handler for the "ready" light
