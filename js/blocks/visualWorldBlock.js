@@ -153,7 +153,7 @@ VisworldBlock.prototype = {
 
         ////////////////////////////////////////////////////////////////////////////////
         // construct list of items and randomize trial order
-        this.itemOrder = orderStimuli(this.stimuli.reps, undefined, 'shuffle');
+        this.itemOrder = createStimulusOrder(this.stimuli.reps, undefined, 'shuffle');
 
         // install "start trial" handler for the "ready" light
         $('#readyWaitContainer img#ready')

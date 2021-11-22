@@ -143,7 +143,7 @@ LongAudioBlock.prototype = {
 
         this.stims = [];
         for (var br = 0; br < this.blockReps; br++) {
-            this.stims = this.stims.concat(pseudoRandomOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
+            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
         //Move to next trial on click

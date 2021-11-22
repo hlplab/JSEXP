@@ -192,7 +192,7 @@ ExposureBlock.prototype = {
             this.catchTrials.push(n);
         }
         
-        this.stims = orderStimuli(Math.ceil(this.maxN / this.vid.length), this.vid.length);
+        this.stims = createStimulusOrder(Math.ceil(this.maxN / this.vid.length), this.vid.length);
 
 
         // set progress bar increment size
