@@ -189,7 +189,7 @@ VisualGridBlock.prototype = {
 
         ////////////////////////////////////////////////////////////////////////////////
         // construct list of items and randomize trial order
-        this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.block.blockOrderMethod);
+        this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
 
         // If trials are NOT to auto-advance from the ready to play state,
         // install "start trial" handler for the "ready" light
