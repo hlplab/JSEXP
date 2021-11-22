@@ -258,17 +258,6 @@ TranscriptionBlock.prototype = {
 };
 
 
-//+ Jonas Raoni Soares Silva
-//@ http://jsfromhell.com/array/shuffle [rev. #1]
-//  shuffle the input array
-// DEPRECATED: use version in utilities.js
-var shuffle = function(v){
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-    return v;
-};
-
 // Some vector math helper functions (get max, min, range, and sum of a numeric Array)
 Array.max = function( array ){
     return Math.max.apply( Math, array );

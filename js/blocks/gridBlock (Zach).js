@@ -84,7 +84,7 @@ function GridBlock(params) {
     this.respField = $('<textArea id="' + namespace + 'Resp" ' +
                        'name="' + namespace + 'Resp" ></textArea>').appendTo('#mturk_form');
     $('#mturk_form').append('<br />');
-    
+
 }
 
 
@@ -105,17 +105,17 @@ GridBlock.prototype = {
     onEndedBlock: undefined,
     pbIncrement: undefined,
     blockRandomizationMethod: undefined,
-    totalUniqueTrials: undefined, 
+    totalUniqueTrials: undefined,
     gridOffset: '',
     prefix: undefined,
-    
+
     getTotalReps: function() {
         var reps;
         var blockReps = 1;
         if (typeof this.reps === 'undefined')  {
             reps = this.stimuliObj.calibReps;
         } else {
-            reps = this.reps;    
+            reps = this.reps;
         }
 
         if (typeof this.blockReps !== 'undefined') {
@@ -134,12 +134,12 @@ GridBlock.prototype = {
         _self.init();
        _self.next();
     },
-    
+
     init: function(opts) {
         console.log("In init");
         var _self = this;
-        
-        //initialize number of unique trials 
+
+        //initialize number of unique trials
         _self.totalUniqueTrials = _self.stimuliObj.filenames.length;
         console.log(_self.totalUniqueTrials);
         _self.gridOffset = $('#grid-wrapper').offset();
@@ -155,8 +155,8 @@ GridBlock.prototype = {
             this.stims = this.stims.concat(pseudoRandomOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
-        
-                
+
+
         ////////////////////////////////////////////////////////////////////////////////
         // Bind handlers for this block:
         // create handler to capture and process keyboard input, and bind to document
@@ -179,7 +179,7 @@ GridBlock.prototype = {
         $('#buttons').append('<input type="button" onclick="calibrationBlock.next()" value="start calibration"></input>');
         $('#grid-wrapper').show();
 
-  
+
     },
     // start next trial
     next: function() {
@@ -190,27 +190,27 @@ GridBlock.prototype = {
         $('#testStatus').html('...wait');
 
         $("#instructionsLower").show();
-        
+
         //Loop to load all the audio
         var currentAudio = _self.stimuliObj.filenames[_self.stims[_self.n]].split('|');
         for (var i=0; i<currentAudio.length; i++) {
             currentAudio[i] = this.stimuliObj.prefix + currentAudio[i] + '.wav';
         };
         var currentSpeakers = _self.stimuliObj.speakers[_self.stims[_self.n]].split('|');
-        
+
         alreadyPlayedAudio = jQuery.extend(true, [], currentSpeakers); //copy; when empty this means all the clips have been played
         alreadyDragged = jQuery.extend(true, [], currentSpeakers); //copy; when empty this means all the clips have been played
         for (var i=0; i<currentSpeakers.length; i++) {
             //create the little icons for each speaker
-            var node = document.createElement("div"); 
-            var textnode = document.createElement("span"); 
+            var node = document.createElement("div");
+            var textnode = document.createElement("span");
             textnode.setAttribute("class", 'itemPos');
             node.appendChild(textnode);
             node.setAttribute("class", "draggable ui-widget-content ui-draggable ui-draggable-handle");
             node.setAttribute("id", currentSpeakers[i]);
             document.getElementById("landing").appendChild(node);
             document.getElementById(currentSpeakers[i]).style.background = this.colors[i];
-            
+
             //add audio
             var audionode= document.createElement("audio");
             audionode.setAttribute("src", currentAudio[i]);
@@ -259,7 +259,7 @@ GridBlock.prototype = {
         $(".silhouette").hide();
         $(".comparisonAnswers").hide();
         $(document).off();
-        $(document).trigger('endBlock_' + this.namespace + 
+        $(document).trigger('endBlock_' + this.namespace +
                             (this.practiceMode ? '.practice' : ''));
         if (this.practiceMode && typeof(this.onEndedPractice) === 'function') {
             this.onEndedPractice();
@@ -272,8 +272,8 @@ GridBlock.prototype = {
 
     // method to handle response. takes event object as input
     recordResp: function() {
-        
-        // format trial information 
+
+        // format trial information
         _self = this;
         this.urlparams = gupo();
         var workerid = this.urlparams['workerId'];
@@ -292,10 +292,10 @@ GridBlock.prototype = {
                 ansY.push($('#'+currentSpeakers[i]).attr("PosY"));
             }
             console.log(orderClipsPlayed);
-            var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]], _self.stimuliObj.speakers[_self.stims[_self.n]], 
+            var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]], _self.stimuliObj.speakers[_self.stims[_self.n]],
                 ansX.join('|'), ansY.join('|'), orderClipsPlayed.join('|'), workerid].join();
             console.log("Writing resp:" + resp);
-            // write info to form field            
+            // write info to form field
             //$('#calibrationResp').val($('#calibrationResp').val() + resp + RESP_DELIM);
             $(this.respField).val($(this.respField).val() + resp + RESP_DELIM);
             this.end();
@@ -304,35 +304,6 @@ GridBlock.prototype = {
 
 };
 
-
-//+ Jonas Raoni Soares Silva
-//@ http://jsfromhell.com/array/shuffle [rev. #1]
-//  shuffle the input array
-// DEPRECATED: use version in utilities.js
-var shuffle = function(v){
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-    return v;
-};
-
-// Some vector math helper functions (get max, min, range, and sum of a numeric Array)
-Array.max = function( array ){
-    return Math.max.apply( Math, array );
-};
-Array.min = function( array ){
-    return Math.min.apply( Math, array );
-};
-Array.range = function(array) {
-    return Array.max(array) - Array.min(array);
-};
-Array.prototype.sum = function() {
-    var s=0;
-    for (var i=0; i<this.length; i++) {
-        s += this[i];
-    };
-    return(s)
-};
 
 // reverse map lookup (get key given value)
 function valToKey(obj, v) {
@@ -359,9 +330,10 @@ function check_if_all_played_and_dragged() {
         $('#nextTrial').show();
     }
 }
+
 function install_grid() {
     $(".draggable" )
-        .draggable({ 
+        .draggable({
             drag: function(){
                 var offset = $(this).offset();
                 var xPos = offset.left;

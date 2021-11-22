@@ -74,12 +74,12 @@ function TripleComparisonBlock(params) {
         console.log(stimuliObj);
         $('#continue').show();
     }
-    
+
     // create responses form element and append to form
     this.respField = $('<textArea id="' + namespace + 'Resp" ' +
                        'name="' + namespace + 'Resp" ></textArea>').appendTo('#mturk_form');
     $('#mturk_form').append('<br />');
-    
+
 }
 
 
@@ -100,7 +100,7 @@ TripleComparisonBlock.prototype = {
     onEndedBlock: undefined,
     pbIncrement: undefined,
     blockRandomizationMethod: undefined,
-    totalUniqueTrials: undefined, 
+    totalUniqueTrials: undefined,
 
     getTotalReps: function() {
         var reps;
@@ -108,7 +108,7 @@ TripleComparisonBlock.prototype = {
         if (typeof this.reps === 'undefined')  {
             reps = this.stimuliObj.calibReps;
         } else {
-            reps = this.reps;    
+            reps = this.reps;
         }
 
         if (typeof this.blockReps !== 'undefined') {
@@ -127,19 +127,19 @@ TripleComparisonBlock.prototype = {
         _self.init();
        _self.next();
     },
-    
+
     init: function(opts) {
         console.log("In init");
         var _self = this;
-        
+
         console.log("I'm not sure if I need to adjust this part yet.");
        // _self.auds = temp2;
        // _self.stims = temp2;
-        
-        //initialize number of unique trials 
+
+        //initialize number of unique trials
         _self.totalUniqueTrials = _self.stimuliObj.filenames.length;
         console.log(_self.totalUniqueTrials);
-        
+
         // initialize trial counter
         this.n = 0;
 
@@ -168,7 +168,7 @@ TripleComparisonBlock.prototype = {
         if (!validateRespKeys(this.respKeys, this.categories)) {
             return false;
         }
-        
+
         ////////////////////////////////////////////////////////////////////////////////
         // Randomize stimuli order.
 
@@ -177,7 +177,7 @@ TripleComparisonBlock.prototype = {
             this.stims = this.stims.concat(pseudoRandomOrder(this.reps, this.totalUniqueTrials, this.blockRandomizationMethod));
         }
         this.pbIncrement = 1.0 / this.stims.length;
-                
+
         ////////////////////////////////////////////////////////////////////////////////
         // Bind handlers for this block:
         // create handler to capture and process keyboard input, and bind to document
@@ -219,7 +219,7 @@ TripleComparisonBlock.prototype = {
         var comp1File = '/' + _self.stimuliObj.prefix + _self.stimuliObj.comparison1[_self.stims[_self.n]];
         $comp1Audio = $('<audio>')
         $comp1Audio.attr("src", comp1File);
-        
+
         var comp2File = '/' + _self.stimuliObj.prefix + _self.stimuliObj.comparison2[_self.stims[_self.n]];
         $comp2Audio = $('<audio>')
         $comp2Audio.attr("src", comp2File);
@@ -248,7 +248,7 @@ TripleComparisonBlock.prototype = {
             play3 = true;
 
         }
-        $('.comparisonAnswers') 
+        $('.comparisonAnswers')
             .click(function(event) {
                 //Check to make sure the participant played each file at least once
                 if (play1 === true && play2 === true && play3===true){
@@ -294,7 +294,7 @@ TripleComparisonBlock.prototype = {
         $(".silhouette").hide();
         $(".comparisonAnswers").hide();
         $(document).off();
-        $(document).trigger('endBlock_' + this.namespace + 
+        $(document).trigger('endBlock_' + this.namespace +
                             (this.practiceMode ? '.practice' : ''));
         if (this.practiceMode && typeof(this.onEndedPractice) === 'function') {
             this.onEndedPractice();
@@ -307,8 +307,8 @@ TripleComparisonBlock.prototype = {
 
     // method to handle response. takes event object as input
     recordResp: function(event) {
-        
-        // format trial information 
+
+        // format trial information
         _self = this;
         this.urlparams = gupo();
         var workerid = this.urlparams['workerId'];
@@ -325,7 +325,7 @@ TripleComparisonBlock.prototype = {
         var resp = [this.namespace, this.n, this.stims[this.n], _self.stimuliObj.filenames[_self.stims[_self.n]],
             _self.stimuliObj.comparison1[_self.stims[_self.n]], _self.stimuliObj.comparison2[_self.stims[_self.n]], $(event.target).attr("id"), ans, workerid].join();
         console.log("Writing resp:" + resp);
-        // write info to form field            
+        // write info to form field
         //$('#calibrationResp').val($('#calibrationResp').val() + resp + RESP_DELIM);
         $(this.respField).val($(this.respField).val() + resp + RESP_DELIM);
         this.end();
@@ -333,17 +333,6 @@ TripleComparisonBlock.prototype = {
 
 };
 
-
-//+ Jonas Raoni Soares Silva
-//@ http://jsfromhell.com/array/shuffle [rev. #1]
-//  shuffle the input array
-// DEPRECATED: use version in utilities.js
-var shuffle = function(v){
-    if (console) console.log('WARNING: labelingblock.js:pseduoRandomOrder is deprecated.  use utilities.js:pseudoRandomOrder instead');
-
-    for(var j, x, i = v.length; i; j = parseInt(Math.random() * i), x = v[--i], v[i] = v[j], v[j] = x);
-    return v;
-};
 
 // Some vector math helper functions (get max, min, range, and sum of a numeric Array)
 Array.max = function( array ){
