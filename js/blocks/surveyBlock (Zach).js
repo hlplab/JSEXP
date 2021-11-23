@@ -118,8 +118,8 @@ surveyBlock.prototype = {
     respField: undefined,
     onEndedBlock: undefined,
     pbIncrement: undefined,
-    stimOrderMethod: 'shuffle_within_blocks',
-    blockOrderMethod: 'shuffle',
+    stimOrderMethod: 'dont_randomize',
+    blockOrderMethod: 'large_blocks_first',
     timeoutMS: 99999999999, // a bit hacky
     myTimer: undefined,
     isBlocked: false,

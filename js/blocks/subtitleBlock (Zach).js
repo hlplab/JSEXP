@@ -143,8 +143,8 @@ newSubtitleBlock.prototype = {
     respField: undefined,
     onEndedBlock: undefined,
     pbIncrement: undefined,
-    stimOrderMethod: 'shuffle_within_blocks',
-    blockOrderMethod: 'shuffle',
+    stimOrderMethod: 'dont_randomize',
+    blockOrderMethod: 'large_blocks_first',
     totalUniqueTrials: undefined,
     currentKeyEvent: "NORESP", // default key event (when no one responds), var stores keypress
     timeoutMS: 99999999999, // a bit hacky

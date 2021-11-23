@@ -136,8 +136,8 @@ VisualGridBlock.prototype = {
     allowFeedback: false,
     autoAdvanceReady: false,
     itemOrder: undefined,       // replaces this.stims in LabelingBlock, indexed by n, indexes stimuli
-    stimOrderMethod: 'shuffle_within_blocks',
-    blockOrderMethod: 'shuffle',
+    stimOrderMethod: 'dont_randomize',
+    blockOrderMethod: 'large_blocks_first',
     randomizeImagePositions: true,
     imagePositions: ['topleft', 'topright', 'bottomleft', 'bottomright'],
     ITI_trialStartToImages: 1000,  // time from trial start to showing pictures
