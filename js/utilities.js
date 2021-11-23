@@ -91,9 +91,9 @@ function createStimulusOrder(reps, n_total, method, block_method) {
 
     if (typeof(block_method) === 'undefined') {
         throwWarning("No block_method provided for ordering stimuli. Setting block_method to 'shuffle'.");
-        block_method = 'shuffle';
-    } else if (!($.inArray(method, ['large_blocks_first', 'large_blocks_last']))) {
-        throwError("Unknown block_method specified. Should be one of 'shuffle', 'large_blocks_first', or 'large_blocks_last'. You used: " + block_method);
+        block_method = 'shuffle_blocks';
+    } else if (!($.inArray(block_method, ['shuffle_blocks', 'large_blocks_first', 'large_blocks_last']))) {
+        throwError("Unknown block_method specified. Should be one of 'shuffle_blocks', 'large_blocks_first', or 'large_blocks_last'. You used: " + block_method);
     }
 
     // create blocks with one of each stimulus, and determine order *within* each block
@@ -135,7 +135,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
         }
         break;
       // RANDOMIZE order of blocks
-      case 'shuffle':
+      case 'shuffle_blocks':
         blocks = shuffle(blocks);
         for (var i=0; i<blocks.length; i++) {
             stims = stims.concat(blocks[i]);
