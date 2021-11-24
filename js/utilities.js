@@ -68,6 +68,9 @@ function randomOrder(reps, n) {
          don't create stimulus blocks. Just randomize. (will ignore value of block_method)
 */
 function createStimulusOrder(reps, n_total, method, block_method) {
+    throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
+    throwMessage("Using stimuls ordering method " + method + " and block ordering method " + block_method + ".");
+
     // If reps is specified as a scalar, convert to an array using n_total. This results in
     // an arraw of length n_total, each value of which is reps
     if (typeof(reps) === "number" || reps.length == 1) {
