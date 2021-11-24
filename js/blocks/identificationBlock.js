@@ -273,7 +273,7 @@ IdentificationBlock.prototype = {
 
         this.stims = [];
         for (var br = 0; br < this.blockReps; br++) {
-            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.stimuliObj.continuum.length, this.blockstimOrderMethod, this.block.blockOrderMethod));
+            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.stimuliObj.continuum.length, this.block.stimOrderMethod, this.block.blockOrderMethod));
         }
 
         // get correct responses for (ordered) stimuli
