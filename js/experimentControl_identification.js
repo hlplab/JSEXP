@@ -35,12 +35,121 @@ function Experiment(baseobj) {
 }
 
 Experiment.prototype = {
-    // defaults
-    blocks: [],
-    blockn: undefined,
-    cookie: 'alreadyDoneCookie',
-    rsrbProtocolNumber: 'RSRB00045955',
-    rsrbConsentFormURL: 'https://www.hlp.rochester.edu/consent/RSRB45955_Consent_2021-02-10.pdf',
+  // defaults
+  platform: 'mturk',
+  blocks: [],
+  blockn: undefined,
+  cookie: 'alreadyDoneCookie',
+  rsrbProtocolNumber: 'RSRB00045955',
+  rsrbConsentFormURL: 'https://www.hlp.rochester.edu/consent/RSRB45955_Consent_2021-02-10.pdf',
+
+  init: function() {
+      this.blockn = 0;
+
+      if ($.inArray(this.platform, ['mturk', 'proliferate']) < 0) throwError("Platform not recognized - " + this.platform);
+
+      // read in URL parameters
+      this.urlparams = gupo();
+      // Determine whether the experiment is run in debug mode. This activates several shortcuts through
+      // the experiment and makes otherwise invisible information visible. Set URL param debug=TRUE.
+      this.debugMode = checkDebug(this.urlparams);
+      if (this.debugMode) throwMessage("Entering VERBOSE (debugging) mode.");
+      // Determine whether the experiment is run in preview mode.
+      // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
+      // except for the front page of the experiment.
+      // If URL parameter assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE the preview mode will be selected.
+      this.previewMode = checkPreview(this.urlparams);
+      // Determine whether the experiment is run in sandbox mode. This is inferred not from the URL
+      // parameters but automatically from the documents' referrer. I.e., this function recognizes
+      // if the HTML is embedded in an MTurk sandbox iframe (the argument is optional, it seems).
+      this.sandboxmode = checkSandbox();
+
+      this.randomID = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+      writeFormField("platform", this.platform);
+      writeFormField("userAgent", navigator.userAgent);
+      writeFormField("randomID", this.randomID);
+      if (this.platform === "mturk") {
+        writeFormField("assignmentId", this.urlparams['assignmentId']);
+        throwMessage("(this field is expected to be undefined unless you are sandboxing or live)")
+      }
+
+      // Record all url param fields
+      for (param in this.urlparams) {
+        writeFormField(param, this.urlparams[param]);
+      }
+
+
+      // detect whether the browser can play audio/video and what formats
+      vidSuffix =
+          Modernizr.video.webm ? '.webm' :
+          Modernizr.video.h264 ? '.mp4' :
+          '';
+      audSuffix =
+          Modernizr.audio.wav == 'probably' ? '.wav' :
+          Modernizr.audio.ogg == 'probably' ? '.ogg' :
+          Modernizr.audio.mp3 == 'probably' ? '.mp3' :
+          Modernizr.audio.wav == 'maybe' ? '.wav' :
+          '';
+
+      var IE = (!! window.ActiveXObject && +(/msie\s(\d+)/i.exec(navigator.userAgent)[1])) || NaN;
+      var Safari = NaN;
+      if (navigator.userAgent.includes('Safari/') && ! navigator.userAgent.includes('Chrome/'))
+          Safari = parseInt(navigator.userAgent.split('Version/')[1].split('.')[0]);
+
+      // Browser must be IE version 10 or higher, Safari version 13 or lover, or Chrome or Opera
+      if (IE < 9 || Safari > 13 || navigator.userAgent.includes('Firefox/')) {
+        $("#errorMessage").show();
+        $("#instructions").hide();
+        throwWarning("Incompatible browser detected");
+        return false;
+      }
+
+      // check for video and audio support, and if it's missing show a message
+      // with an explanation and links to browser download websites
+      if (vidSuffix && audSuffix) {
+        $("#errorMessage").hide();
+        $("#instructions").show();
+      } else {
+        $("#errorMessage").show();
+        $("#instructions").hide();
+        throwWarning("Browser can't play both audio and video formats.");
+        return false;
+      }
+
+      var cookie = readCookie(this.cookie);
+      if (!this.sandboxmode && !this.debugMode && cookie) {
+        $("#errorMessage").html('<p>It looks like you have already completed this HIT (or reloaded this HIT) or a similar version of this HIT.</p><p>Please <strong>do not accept this HIT</strong>, your results will be automatically rejected.</p><p>If you accidentally reloaded this HIT, please do not continue. Instead, please <a target="_blank" href="mailto: hlplab@gmail.com">email us</a>.</p>');
+        $("#errorMessage").show();
+        $("#instructions").hide();
+        throwWarning("Cookie detected.");
+        return false;
+      }
+      createCookie(this.cookie, 1, 365);
+
+      // format consent form div with appropriate link to consent form.
+      this.consentFormDiv = this.consentFormDiv.format(this.rsrbConsentFormURL);
+
+      // populate remaining DIVs now that all incompatible browsers have been handled
+      $("#continue").html('<span id="contText">Click to continue...</span>');
+      $("#fixation").html('+');
+
+      // load post-experiment survey into div in form
+      $('form#mturk_form')
+          .append($('<div id="endForm" class="survey"></div>')
+                  .load(this.survey + ' #endForm > *'));
+
+      // set up form for end of experiment with demographic and other info
+      // load demographic survey into div in form
+      var rsrbNum = this.rsrbProtocolNumber;
+      $('form#mturk_form')
+          .append($('<div id="rsrb" class="survey">')
+                  .load('JSEXP/surveys/rsrb_survey.html #rsrb > *', function() {
+                      // set protocol number
+                      $('input[name="rsrb.protocol"]:hidden').val(rsrbNum);
+                      throwMessage('Name of RSRB protocol: ' + rsrbNum + '\nRSRB information written into form field: ' + $('input[name="rsrb.protocol"]').val() + "\n(this value is expected to be undefined unless you are sandboxing or live)");
+                  }));
+
+  },
 
     // addBlock: function(block, instructions, endedHandler, practiceParameters) {
     addBlock: function(obj) {
@@ -141,119 +250,6 @@ Experiment.prototype = {
         }
     },
 
-    init: function() {
-        this.blockn = 0;
-
-        // read in URL parameters
-        this.urlparams = gupo();
-        // Determine whether the experiment is run in debug mode. This activates several shortcuts through
-        // the experiment and makes otherwise invisible information visible. Set URL param debug=TRUE.
-        this.debugMode = checkDebug(this.urlparams);
-        if (this.debugMode) console.log("Entering VERBOSE (debugging) mode.");
-        // Determine whether the experiment is run in preview mode.
-        // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
-        // except for the front page of the experiment.
-        // If URL parameter assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE the preview mode will be selected.
-        this.previewMode = checkPreview(this.urlparams);
-        // Determine whether the experiment is run in sandbox mode. This is inferred not from the URL
-        // parameters but automatically from the documents' referrer. I.e., this function recognizes
-        // if the HTML is embedded in an MTurk sandbox iframe (the argument is optional, it seems).
-        this.sandboxmode = checkSandbox();
-
-        // get assignmentID and populate form field
-        $("#assignmentID").val(this.urlparams['assignmentID']);
-        this.randomID = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        // record random ID for this instance of the experiment
-        $("#randomID").val(this.randomID);
-
-        // record userAgent
-        $("#userAgent").val(navigator.userAgent);
-        // Clients' UTC time offset (in minutes) is added as userDateTimeOffset o form just before final
-        // submit in function mturk_end_surveys_and_submit() in mturk_helpers (so as to have the timezone
-        // offset just before submit).
-
-        // Record all url param fields
-        for (param in this.urlparams) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    id: param,
-                    name: param,
-                    value: this.urlparams[param]
-                }).appendTo('form#mturk_form');
-        }
-
-        // detect whether the browser can play audio/video and what formats
-        vidSuffix =
-            Modernizr.video.webm ? '.webm' :
-            Modernizr.video.h264 ? '.mp4' :
-            '';
-        audSuffix =
-            Modernizr.audio.wav == 'probably' ? '.wav' :
-            Modernizr.audio.ogg == 'probably' ? '.ogg' :
-            Modernizr.audio.mp3 == 'probably' ? '.mp3' :
-            Modernizr.audio.wav == 'maybe' ? '.wav' :
-            '';
-
-        var IE = (!! window.ActiveXObject && +(/msie\s(\d+)/i.exec(navigator.userAgent)[1])) || NaN;
-        var Safari = NaN;
-        if (navigator.userAgent.includes('Safari/') && ! navigator.userAgent.includes('Chrome/'))
-            Safari = parseInt(navigator.userAgent.split('Version/')[1].split('.')[0]);
-
-        // Browser must be IE version 10 or higher, Safari version 13 or lover, or Chrome or Opera
-        if (IE < 9 || Safari > 13 || navigator.userAgent.includes('Firefox/')) {
-          $("#errorMessage").show();
-          $("#instructions").hide();
-          throwWarning("Incompatible browser detected");
-          return false;
-        }
-
-        // check for video and audio support, and if it's missing show a message
-        // with an explanation and links to browser download websites
-        if (vidSuffix && audSuffix) {
-          $("#errorMessage").hide();
-          $("#instructions").show();
-        } else {
-          $("#errorMessage").show();
-          $("#instructions").hide();
-          throwWarning("Browser can't play both audio and video formats.");
-          return false;
-        }
-
-        var cookie = readCookie(this.cookie);
-        if (!this.sandboxmode && !this.debugMode && cookie) {
-          $("#errorMessage").html('<p>It looks like you have already completed this HIT (or reloaded this HIT) or a similar version of this HIT.</p><p>Please <strong>do not accept this HIT</strong>, your results will be automatically rejected.</p><p>If you accidentally reloaded this HIT, please do not continue. Instead, please <a target="_blank" href="mailto: hlplab@gmail.com">email us</a>.</p>');
-          $("#errorMessage").show();
-          $("#instructions").hide();
-          throwWarning("Cookie detected.");
-          return false;
-        }
-        createCookie(this.cookie, 1, 365);
-
-        // format consent form div with appropriate link to consent form.
-        this.consentFormDiv = this.consentFormDiv.format(this.rsrbConsentFormURL);
-
-        // populate remaining DIVs now that all incompatible browsers have been handled
-        $("#continue").html('<span id="contText">Click to continue...</span>');
-        $("#fixation").html('+');
-
-        // load post-experiment survey into div in form
-        $('form#mturk_form')
-            .append($('<div id="endForm" class="survey"></div>')
-                    .load(this.survey + ' #endForm > *'));
-
-        // set up form for end of experiment with demographic and other info
-        // load demographic survey into div in form
-        var rsrbNum = this.rsrbProtocolNumber;
-        $('form#mturk_form')
-            .append($('<div id="rsrb" class="survey">')
-                    .load('JSEXP/surveys/rsrb_survey.html #rsrb > *', function() {
-                        // set protocol number
-                        $('input[name="rsrb.protocol"]:hidden').val(rsrbNum);
-                        throwMessage('Name of RSRB protocol: ' + rsrbNum + '\nRSRB information written into form field: ' + $('input[name="rsrb.protocol"]').val() + "\n(this value is expected to be undefined unless you are sandboxing or live)");
-                    }));
-
-    },
-
     wrapup: function(why) {
         throwMessage("Wrapping up experiment.");
 
@@ -264,9 +260,9 @@ Experiment.prototype = {
           "<p>There are just a few more questions we ask you to answer.</p>")
           .show();
 
-          // mturk_end_surveys_and_submit() is a function in js-adapt/mturk-helpers.js
+          // end_surveys_and_submit() is a function in js-adapt/mturk-helpers.js
           // which steps through the demographics (RSRB) and post-experiment surveys and then submits.
-          continueButton(mturk_end_surveys_and_submit);
+          continueButton(end_surveys_and_submit);
         } else {
             // error?
             // any parameter not undefined is assumed to be an error, so record it and then wrap up.

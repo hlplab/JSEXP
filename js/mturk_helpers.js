@@ -105,7 +105,7 @@ function collect_and_format_form_values(formID)
  }
 
 // function to run through RSRB demographic and audio/comments forms and then submit
-var mturk_end_surveys_and_submit = function() {
+var end_surveys_and_submit = function() {
    $("#instructions").hide();
    $('.question_section').not("[style='display:none']" ).show();
    $('.question_section *').not("[style='display:none']" ).show();
@@ -144,17 +144,54 @@ var mturk_end_surveys_and_submit = function() {
                      // Submit the form (and thus all data) to MTurk
                      $('#mturk_form #rsrb').hide();
 
-                     // get clients UTC time offset (in minutes)
+                     // get clients UTC time offset (in minutes) and write into form field
                      var userDateTime = new Date();
-                     $("#userDateTime").val(userDateTime.toUTCString());
-                     $("#userDateTimeOffset").val(userDateTime.getTimezoneOffset());
+                     writeFormField("userDateTime", userDateTime.toUTCString());
+                     writeFormField("userDateTimeOffset", serDateTime.getTimezoneOffset());
 
                      if (debugMode) {
                        throwMessage(collect_and_format_form_values("mturk_form"));
                        alert("Pausing for read-out from console.");
                      }
 
-                     $("#mturk_form").submit();
+                     // figure out platform and submit
+                     if ($("#platform").val() === 'mturk') {
+                        $("#mturk_form").submit();
+                     } else {
+                        const formElement = document.querySelector('form#mturk_form');
+
+					              // convert the form to JSON
+						            const getFormJSON = (form) => {
+						                const data = new FormData(form);
+						                return Array.from(data.keys()).reduce((result, key) => {
+							                    if (result[key]) {
+							                        result[key] = data.getAll(key).join();
+							                        return result;
+							                    }
+							                    result[key] = data.get(key);
+							                    return result;
+						                }, {});
+						            };
+
+                        // handle the form submission event, prevent default form behaviour, check validity, convert form to JSON
+					              const valid = formElement.reportValidity();
+                        throwMessage("JSON conversion validity report: " + valid);
+						            const result = getFormJSON(formElement);
+                        throwMessage("JSON conversion of form elements prior to parising them further: " + result);
+            						// handle one, multiple or no files uploaded
+						            //const images = [result.images].flat().filter((file) => !!file.name)
+
+						            // use spread function, but override the keys we've made changes to
+						            const output = {
+						                    ...result,
+						                    // images,
+						                    similar_accent_familiarity_place,
+						                    specific_language_background
+						            }
+						            throwMessage(output);
+
+						            proliferate.submit(output); // output is the JSON object converted from #mturk_form
+                    }
                });
            }
        }
@@ -202,6 +239,21 @@ var throwWarning = function(text) {
 
 var throwError = function(text) {
   throwMessage('ERROR: ' + text);
+}
+
+var writeFormField = function(name, value) {
+  if (typeof($("#" + name).val()) === 'undefined') {
+    throwMessage("Writing value " + value + " into new form field " + name + ".");
+    $('<input>').attr({
+      type: 'hidden',
+      id: name,
+      name: name,
+      value: value
+    }).appendTo('form#mturk_form');
+  } else {
+    throwMessage("Writing value " + value + " into existing form field " + name + ".");
+    $("#" + name).val(value);
+  }
 }
 
 

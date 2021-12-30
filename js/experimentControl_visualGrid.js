@@ -20,6 +20,13 @@
  */
 
 function Experiment(obj) {
+    if (typeof(obj.platform) === 'undefined') {
+      this.platform = 'mturk';
+    } else {
+      this.platform = obj.platform;
+    }
+    if ($.inArray(this.platform, ['mturk', 'proliferate']) < 0) throwError("Platform not recognized - " + this.platform);
+
     this.blocks = [];
     this.blockn = undefined;
     this.cookie = obj.cookie;
@@ -55,23 +62,18 @@ Experiment.prototype = {
             // parameters but automatically from the documents' referrer. I.e., this function recognizes
             // if the HTML is embedded in an MTurk sandbox iframe (the argument is optional, it seems).
             this.sandboxmode = checkSandbox(this.urlparams);
-            // *********************** TO BE CHECKED: does mturk sandbox still have same URL?
 
-            // get assignmentID and populate form field
-            $("#assignmentId").val(this.urlparams['assignmentId']);
-            // record userAgent
-            $("#userAgent").val(navigator.userAgent);
-            // record random ID for this instance of the experiment
-            $("#randomID").val(this.randomID);
+            writeFormField("platform", this.platform);
+            writeFormField("userAgent", navigator.userAgent);
+            writeFormField("randomID", this.randomID);
+            if (this.platform === "mturk") {
+              writeFormField("assignmentId", this.urlparams['assignmentId']);
+              throwMessage("(this field is expected to be undefined unless you are sandboxing or live)")
+            }
 
             // Record all url param fields
             for (param in this.urlparams) {
-                    $('<input>').attr({
-                        type: 'hidden',
-                        id: param,
-                        name: param,
-                        value: this.urlparams[param]
-                    }).appendTo('form#mturk_form');
+              writeFormField(param, this.urlparams[param]);
             }
 
             // detect whether the browser can play audio/video and what formats
@@ -269,9 +271,9 @@ Experiment.prototype = {
                                     "<p>That's the end of the experiment!  Just a few more things for you to answer.</p>")
             .show();
 
-            continueButton(mturk_end_surveys_and_submit);
-        // mturk_end_surveys_and_submit() is a function in js-adapt/mturk-helpers.js
-        // which steps through the demographics/audio equipment surveys and then submits.
+            continueButton(end_surveys_and_submit);
+            // end_surveys_and_submit() is a function in js-adapt/mturk-helpers.js
+            // which steps through the demographics/audio equipment surveys and then submits.
         } else {
             // error?
             // any parameter not undefined is assumed to be an error, so record it and then wrap up.
@@ -282,7 +284,7 @@ Experiment.prototype = {
                                     "<p>Unfortunately, we were not able to calibrate the experiment to your hearing and audio system, and this is the end of the experiment.  If you have any comments, please write them in the box below before submitting this HIT.  Thank you for participating.</p>")
                 .show();
 
-            continueButton(mturk_end_surveys_and_submit_error);
+            continueButton(end_surveys_and_submit_error);
         }
 
     },
