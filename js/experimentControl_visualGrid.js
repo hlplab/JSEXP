@@ -76,6 +76,13 @@ Experiment.prototype = {
               writeFormField(param, this.urlparams[param]);
             }
 
+            // hide all url params after having read them in.
+            window.history.replaceState(
+              {},
+              '',
+              `${window.location.pathname}`,
+            )
+
             // detect whether the browser can play audio/video and what formats
             vidSuffix =
                 Modernizr.video.webm ? '.webm' :
