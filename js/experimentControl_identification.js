@@ -78,6 +78,11 @@ Experiment.prototype = {
         writeFormField(param, this.urlparams[param]);
       }
 
+      window.history.replaceState(
+        {},
+        '',
+        `${window.location.pathname}`,
+      )
 
       // detect whether the browser can play audio/video and what formats
       vidSuffix =
