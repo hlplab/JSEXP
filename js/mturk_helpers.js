@@ -147,7 +147,7 @@ var end_surveys_and_submit = function() {
                      // get clients UTC time offset (in minutes) and write into form field
                      var userDateTime = new Date();
                      writeFormField("userDateTime", userDateTime.toUTCString());
-                     writeFormField("userDateTimeOffset", serDateTime.getTimezoneOffset());
+                     writeFormField("userDateTimeOffset", userDateTime.getTimezoneOffset());
 
                      if (debugMode) {
                        throwMessage(collect_and_format_form_values("mturk_form"));
@@ -156,8 +156,10 @@ var end_surveys_and_submit = function() {
 
                      // figure out platform and submit
                      if ($("#platform").val() === 'mturk') {
+                        throwMessage("Submitting to MTurk.");
                         $("#mturk_form").submit();
                      } else {
+                        throwMessage("Preparing to submit to Proliferate/Prolific.");
                         const formElement = document.querySelector('form#mturk_form');
 
 					              // convert the form to JSON
@@ -190,6 +192,7 @@ var end_surveys_and_submit = function() {
 						            }
 						            throwMessage(output);
 
+                        throwMessage("Submitting to Proliferate/Prolific.");
 						            proliferate.submit(output); // output is the JSON object converted from #mturk_form
                     }
                });

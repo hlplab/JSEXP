@@ -74,7 +74,7 @@ Experiment.prototype = {
       } else {
         writeFormField("platform", this.platform);
       }
-      if ($.inArray(this.platform, ['mturk', 'proliferate']) < 0) throwError("Platform not recognized - " + this.platform);
+      if ($.inArray(this.platform, ['mturk', 'proliferate', 'prolific']) < 0) throwError("Platform not recognized - " + this.platform);
 
       // Determine whether the experiment is run in preview mode.
       // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
