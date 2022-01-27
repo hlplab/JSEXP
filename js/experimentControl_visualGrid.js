@@ -49,6 +49,7 @@ Experiment.prototype = {
 
             // read in URL parameters
             this.urlparams = gupo();
+
             // Determine whether the experiment is run in debug mode. This activates several shortcuts through
             // the experiment and makes otherwise invisible information visible. Set URL param debug=TRUE.
             this.debugMode = checkDebug(this.urlparams);
@@ -63,6 +64,19 @@ Experiment.prototype = {
               )
             }
 
+            // Check whether URLPARAMs specified different platform than handed to experiment object.
+            this.platform = this.platform.toLowerCase();
+            if (this.urlparams['platform']) {
+              this.urlparams['platform'] = this.urlparams['platform'].toLowerCase();
+              if (this.platform !== this.urlparams['platform']) {
+                this.platform = this.urlparams['platform'];
+                throwWarning("Overriding platform argument based on URL parameter provided. MAKE SURE THAT THIS IS INTENDED. Platform is now " + this.platform);
+              }
+            } else {
+              writeFormField("platform", this.platform);
+            }
+            if ($.inArray(this.platform, ['mturk', 'proliferate']) < 0) throwError("Platform not recognized - " + this.platform);
+
             // Determine whether the experiment is run in preview mode.
             // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
             // except for the front page of the experiment.
@@ -73,7 +87,6 @@ Experiment.prototype = {
             // if the HTML is embedded in an MTurk sandbox iframe (the argument is optional, it seems).
             this.sandboxmode = checkSandbox(this.urlparams);
 
-            writeFormField("platform", this.platform);
             writeFormField("userAgent", navigator.userAgent);
             writeFormField("randomID", this.randomID);
             if (this.platform === "mturk") {
