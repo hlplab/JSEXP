@@ -52,7 +52,17 @@ Experiment.prototype = {
             // Determine whether the experiment is run in debug mode. This activates several shortcuts through
             // the experiment and makes otherwise invisible information visible. Set URL param debug=TRUE.
             this.debugMode = checkDebug(this.urlparams);
-            if (this.debugMode) console.log("Entering VERBOSE (debugging) mode.");
+            if (this.debugMode) {
+              throwMessage("Entering VERBOSE (debugging) mode.");
+            } else {
+              // hide all url params after having read them in.
+              window.history.replaceState(
+                {},
+                '',
+                `${window.location.pathname}`,
+              )
+            }
+
             // Determine whether the experiment is run in preview mode.
             // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
             // except for the front page of the experiment.
@@ -75,13 +85,6 @@ Experiment.prototype = {
             for (param in this.urlparams) {
               writeFormField(param, this.urlparams[param]);
             }
-
-            // hide all url params after having read them in.
-            window.history.replaceState(
-              {},
-              '',
-              `${window.location.pathname}`,
-            )
 
             // detect whether the browser can play audio/video and what formats
             vidSuffix =
