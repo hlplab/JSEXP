@@ -149,14 +149,15 @@ var end_surveys_and_submit = function() {
                      writeFormField("userDateTime", userDateTime.toUTCString());
                      writeFormField("userDateTimeOffset", userDateTime.getTimezoneOffset());
 
-                     if (debugMode) {
-                       throwMessage(collect_and_format_form_values("mturk_form"));
-                       alert("Pausing for read-out from console.");
-                     }
-
                      // figure out platform and submit
                      if ($("#platform").val() === 'mturk') {
                         throwMessage("Submitting to MTurk.");
+
+                        if (debugMode) {
+                          throwMessage(collect_and_format_form_values("mturk_form"));
+                          alert("Pausing for read-out from console.");
+                        }
+
                         $("#mturk_form").submit();
                      } else {
                         throwMessage("Preparing to submit to Proliferate/Prolific.");
@@ -185,12 +186,14 @@ var end_surveys_and_submit = function() {
 
 						            // use spread function, but override the keys we've made changes to
 						            const output = {
-						                    ...result,
-						                    // images,
-						                    similar_accent_familiarity_place,
-						                    specific_language_background
+						                    ...result
+						                    // ,images,
 						            }
-						            throwMessage(output);
+
+                        if (debugMode) {
+                          throwMessage(output);
+                          alert("Pausing for read-out from console.");
+                        }
 
                         throwMessage("Submitting to Proliferate/Prolific.");
 						            proliferate.submit(output); // output is the JSON object converted from #mturk_form
