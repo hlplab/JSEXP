@@ -41,7 +41,7 @@ Experiment.prototype = {
   blockn: undefined,
   cookie: 'alreadyDoneCookie',
   rsrbProtocolNumber: 'RSRB00045955',
-  rsrbConsentFormURL: 'https://www.hlp.rochester.edu/consent/RSRB45955_Consent_2021-02-10.pdf',
+  rsrbConsentFormURL: '',
 
   init: function() {
       this.blockn = 0;
@@ -59,7 +59,7 @@ Experiment.prototype = {
         window.history.replaceState(
           {},
           '',
-          `${window.location.pathname}?experiment_id=` + this.urlparams['experiment_id'] + `&participant_id=` + this.urlparams['participant_id'],
+          `${window.location.pathname}` + '?experiment_id=' + this.urlparams['experiment_id'] + '&participant_id=' + this.urlparams['participant_id']
         )
       }
 

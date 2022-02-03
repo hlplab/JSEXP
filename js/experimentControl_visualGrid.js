@@ -59,7 +59,7 @@ Experiment.prototype = {
               window.history.replaceState(
                 {},
                 '',
-                `${window.location.pathname}?experiment_id=` + this.urlparams['experiment_id'] + `&participant_id=` + this.urlparams['participant_id'],
+                `${window.location.pathname}` + '?experiment_id=' + this.urlparams['experiment_id'] + '&participant_id=' + this.urlparams['participant_id']
               )
             }
 
