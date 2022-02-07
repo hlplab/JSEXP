@@ -54,13 +54,6 @@ Experiment.prototype = {
       this.debugMode = checkDebug(this.urlparams);
       if (this.debugMode) {
         throwMessage("Entering VERBOSE (debugging) mode.");
-      } else {
-        // hide all url params after having read them in.
-        window.history.replaceState(
-          {},
-          '',
-          `${window.location.pathname}` + '?experiment_id=' + this.urlparams['experiment_id'] + '&participant_id=' + this.urlparams['participant_id']
-        )
       }
 
       // Check whether URLPARAMs specified different platform than handed to experiment object.
@@ -75,6 +68,23 @@ Experiment.prototype = {
         writeFormField("platform", this.platform);
       }
       if ($.inArray(this.platform, ['mturk', 'proliferate', 'prolific']) < 0) throwError("Platform not recognized - " + this.platform);
+
+      // hide all url params after having read them in.
+      if (!this.debugMode) {
+        if (this.platform === 'mturk') {
+          window.history.replaceState(
+            {},
+            '',
+            `${window.location.pathname}`
+          )
+        } else {
+          window.history.replaceState(
+            {},
+            '',
+            `${window.location.pathname}` + '?experiment_id=' + this.urlparams['experiment_id'] + '&participant_id=' + this.urlparams['participant_id']
+          )
+        }
+      }
 
       // Determine whether the experiment is run in preview mode.
       // Preview is what MTurkers see prior to accepting a HIT. It should not contain any information
