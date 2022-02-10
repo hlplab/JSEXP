@@ -60,7 +60,7 @@ function randomOrder(reps, n) {
 
    method = 'dont_randomize' (DEFAULT)
          keep stimuli within each block in the original order. If stimuli have different numbers
-         of reps, this does not necessarily mean that the same stimuli will be presented in reached
+         of reps, this does not necessarily mean that the same stimuli will be presented in each
          block.
    method = 'shuffle_within_blocks'
          randomize stimuli within each block
@@ -69,10 +69,10 @@ function randomOrder(reps, n) {
 */
 function createStimulusOrder(reps, n_total, method, block_method) {
     throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
-    throwMessage("Using stimuls ordering method " + method + " and block ordering method " + block_method + ".");
+    throwMessage("Using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
 
     // If reps is specified as a scalar, convert to an array using n_total. This results in
-    // an arraw of length n_total, each value of which is reps
+    // an array of length n_total, each value of which is reps
     if (typeof(reps) === "number" || reps.length == 1) {
         if (typeof(n_total) !== "undefined") {
             reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n_total);
@@ -86,7 +86,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     if (typeof(method) === 'undefined') {
         throwWarning("No method provided for ordering stimuli. Setting method to 'dont_randomize'.");
         method = 'dont_randomize';
-    } else if (!($.inArray(method, ['dont_randomize', 'shuffle_within_blocks', 'shuffle_across_blocks', 'shuffle']))) {
+    } else if ($.inArray(method, ['dont_randomize', 'shuffle_within_blocks', 'shuffle_across_blocks', 'shuffle']) < 0) {
         throwError("Unknown method specified. Should be one of 'dont_randomize', 'shuffle_within_blocks', or 'shuffle_across_blocks'. You used: " + method);
     } else if (method == 'shuffle_across_blocks' | method == 'shuffle') {
         return randomOrder(reps, n_total);

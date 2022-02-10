@@ -242,7 +242,7 @@ VisualGridBlock.prototype = {
 
     handlePlay: function() {
         throwMessage('Playing stimulus (in handle).');
-        $('.'+this.namespace + 'audio').trigger('play');
+        $('.' + this.namespace + 'audio').trigger('play');
         this.waitForResp();
         this.tStart = Date.now();
     },
