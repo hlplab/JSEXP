@@ -488,11 +488,13 @@ VisualGridBlock.prototype = {
         $("#visualGridContainer").hide();
         var numTrials = this.itemOrder.length;
         // approximate duration of whole section, to nearest five minutes (rounded up)
-        var timeNearestFiveMins = Math.ceil(this.itemOrder.length/this.trialsPerMinute / 5)*5;
+        var timeNearestFiveMins = Math.ceil(this.itemOrder.length/this.trialsPerMinute / 5) * 5;
 
         // If not instruction were provided jump to first trials, else display instructions and
         // wait until continue button is clicked.
         if (typeof(this.instructions) === 'undefined') {
+          throwMessage("No instructions found for block " + this.namespace);
+
           $("#progressBar").show();
           $("#instructions").hide();
           $("#visualGridContainer").show();
