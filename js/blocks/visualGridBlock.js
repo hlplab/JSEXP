@@ -75,6 +75,9 @@ function VisualGridBlock(params) {
         case 'showFamiliarization':
             this.showFamiliarization = params[p];
             break;
+        case 'itemOrder':
+            this.itemOrder = params[p];
+            break;
         case 'stimOrderMethod':
             this.stimOrderMethod = params[p];
             break;
