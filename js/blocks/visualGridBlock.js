@@ -363,6 +363,7 @@ VisualGridBlock.prototype = {
       }
 
       throwMessage(
+        "Current block: " + self.namespace + "\n" +
         "Current trial: " + _self.n + "\n" +
         "Current item: " + _self.itemOrder[_self.n] + "\n" +
         "Allow feedback in this block? " + _self.allowFeedback + "\n" +
