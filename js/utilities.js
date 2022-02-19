@@ -68,9 +68,6 @@ function randomOrder(reps, n) {
          don't create stimulus blocks. Just randomize. (will ignore value of block_method)
 */
 function createStimulusOrder(reps, n_total, method, block_method) {
-    throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
-    throwMessage("Using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
-
     // If reps is specified as a scalar, convert to an array using n_total. This results in
     // an array of length n_total, each value of which is reps
     if (typeof(reps) === "number" || reps.length == 1) {
@@ -98,6 +95,9 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     } else if (!($.inArray(block_method, ['shuffle_blocks', 'large_blocks_first', 'large_blocks_last']))) {
         throwError("Unknown block_method specified. Should be one of 'shuffle_blocks', 'large_blocks_first', or 'large_blocks_last'. You used: " + block_method);
     }
+
+    throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
+    throwMessage("Using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
 
     // create blocks with one of each stimulus, and determine order *within* each block
     // based on method (only necessary because of non-uniform repetitions)
