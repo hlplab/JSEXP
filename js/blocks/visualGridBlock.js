@@ -31,7 +31,7 @@ function VisualGridBlock(params) {
             this.stims = params[p];
             break;
         case 'instructions':
-            instructions = params[p];
+            this.instructions = params[p];
             break;
         case 'namespace':
             namespace = params[p];
@@ -100,15 +100,6 @@ function VisualGridBlock(params) {
         this.namespace = namespace;
     }
 
-    // set intructions for this bloc
-    if (typeof(instructions) === 'undefined') {
-        this.instructions = '<h3>Start of experiment</h3>'+
-              '<p>The pictures and words you just saw will be used in the next phase of the experiment. First you will see two pictures and a green circle. When the green circle lights up, click on the circle. You will then hear a word. Please click on the picture that you hear.</p><p><strong>Please respond as quickly and as accurately as possible.</strong>  If you\'re not sure, please take your best guess. ' +
-              'The progress bar at the top will show you how many trials you have completed and how many trials remain.</p>';
-    } else {
-        this.instructions = instructions;
-    }
-
     // add images to DOM
     for (image_name in this.images) {
         $('<img />')
@@ -135,7 +126,7 @@ function VisualGridBlock(params) {
 VisualGridBlock.prototype = {
     allowFeedback: false,
     autoAdvanceReady: false,
-    itemOrder: undefined,       // replaces this.stims in LabelingBlock, indexed by n, indexes stimuli
+    itemOrder: undefined,       // if undefined, the item order will be generated based on stimOrderMethod and blockOrderMethod
     stimOrderMethod: 'dont_randomize',
     blockOrderMethod: 'shuffle_blocks',
     randomizeImagePositions: true,
@@ -189,7 +180,7 @@ VisualGridBlock.prototype = {
 
         ////////////////////////////////////////////////////////////////////////////////
         // construct list of items and randomize trial order
-        this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
+        if (typeof(this.itemOrder) === 'undefined') this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
 
         // If trials are NOT to auto-advance from the ready to play state,
         // install "start trial" handler for the "ready" light
@@ -488,27 +479,35 @@ VisualGridBlock.prototype = {
     },
 
     endFamiliarize: function() {
-        if (console) console.log('Familiarization completed');
+        throwMessage('Familiarization completed');
+
         $("#visualGridContainer").hide();
         var numTrials = this.itemOrder.length;
         // approximate duration of whole section, to nearest five minutes (rounded up)
         var timeNearestFiveMins = Math.ceil(this.itemOrder.length/this.trialsPerMinute / 5)*5;
-        $("#instructions")
-            .html(this.instructions)
-            .show();
 
-        var _self = this;
-        continueButton(function() {
-                           $("#progressBar").show();
-                           $("#instructions").hide();
-                           $("#visualGridContainer").show();
-                           _self.next();
-                       });
+        // If not instruction were provided jump to first trials, else display instructions and
+        // wait until continue button is clicked.
+        if (typeof(this.instructions) === 'undefined') {
+          $("#progressBar").show();
+          $("#instructions").hide();
+          $("#visualGridContainer").show();
+          this.next();
+        } else {
+          $("#instructions")
+          .html(this.instructions)
+          .show();
+
+          var _self = this;
+          continueButton(function() {
+            $("#progressBar").show();
+            $("#instructions").hide();
+            $("#visualGridContainer").show();
+            _self.next();
+          });
+        }
     },
-
 };
-
-
 
 
 function blinkId(id, interval, times) {
