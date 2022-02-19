@@ -85,8 +85,6 @@ function createStimulusOrder(reps, n_total, method, block_method) {
         method = 'dont_randomize';
     } else if ($.inArray(method, ['dont_randomize', 'shuffle_within_blocks', 'shuffle_across_blocks', 'shuffle']) < 0) {
         throwError("Unknown method specified. Should be one of 'dont_randomize', 'shuffle_within_blocks', or 'shuffle_across_blocks'. You used: " + method);
-    } else if (method == 'shuffle_across_blocks' | method == 'shuffle') {
-        return randomOrder(reps, n_total);
     }
 
     if (typeof(block_method) === 'undefined') {
@@ -98,6 +96,11 @@ function createStimulusOrder(reps, n_total, method, block_method) {
 
     throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
     throwMessage("Using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
+
+    // Catch cases that don't need further action
+    if (method == 'shuffle_across_blocks' | method == 'shuffle') {
+        return randomOrder(reps, n_total);
+    }
 
     // create blocks with one of each stimulus, and determine order *within* each block
     // based on method (only necessary because of non-uniform repetitions)
