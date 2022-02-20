@@ -149,6 +149,7 @@ VisualGridBlock.prototype = {
     run: function() {
         var _self = this;
         this.init();
+
         if (_self.showFamiliarization == true) {
             _self.familiarize();
         }
@@ -159,6 +160,7 @@ VisualGridBlock.prototype = {
 
     init: function() {
         var _self = this;
+        throwMessage("Initializing block " + this.namespace);
 
         // initialize trial counter
         this.n = 0;
@@ -180,10 +182,16 @@ VisualGridBlock.prototype = {
             .hide()
             .trigger('load');
 
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // construct list of items and randomize trial order
-        if (typeof(this.itemOrder) === 'undefined') this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
+        ////////////////////////////////////////////////////////////////////////////////////
+        // If not item order was provided, construct list of items and randomize trial order
+        ////////////////////////////////////////////////////////////////////////////////////
+        if (typeof(this.itemOrder) === 'undefined') {
+          if (this.stimOrderMethod === 'dont_randomize' & this.blockOrderMethod === 'dont_randomize') {
+            this.itemOrder = Array.apply(0, Array(this.stims.filenames.length)).map(function(_,b) { return b; });
+          } else {
+            this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
+          }
+        }
 
         // If trials are NOT to auto-advance from the ready to play state,
         // install "start trial" handler for the "ready" light
@@ -363,7 +371,7 @@ VisualGridBlock.prototype = {
       }
 
       throwMessage(
-        "Current block: " + self.namespace + "\n" +
+        "Current block: " + _self.namespace + "\n" +
         "Current trial: " + _self.n + "\n" +
         "Current item: " + _self.itemOrder[_self.n] + "\n" +
         "Allow feedback in this block? " + _self.allowFeedback + "\n" +
@@ -438,7 +446,7 @@ VisualGridBlock.prototype = {
         var _self = this;
 
         // iterate over images in random order, assigning handlers
-        var imgs = shuffle($("."+this.namespace + 'image'));
+        var imgs = shuffle($("." + this.namespace + 'image'));
         console.log(imgs);
 
         $("#progressBar").hide();
