@@ -25,6 +25,8 @@ installPB = function(elemID, startProportion) {
         $('#' + elemID).append('<div class="pbInner" style="height: 100%; background-color: #339933; width: 0%"></div>');
         $('#' + elemID + ' .pbInner').attr('prop', '0');
     }
+
+    throwMessage("Initializing progress bar with start proportion " + startProportion);
     if (typeof(startProportion) !== 'undefined') setPB(elemID, startProportion);
 }
 
@@ -38,19 +40,9 @@ setPB = function(elemID, proportion) {
 
 plusPB = function(elemID, proportion) {
     var eInner = $('#' + elemID + ' .pbInner');
-    var eOuter = $('#' + elemID);
 
     setPB(elemID, proportion + parseFloat(eInner.attr('prop')));
     refreshPB(elemID);
-
-    // var newW = eInner.width() + eOuter.width() * proportion;
-    // if (newW < eOuter.width()) {
-    //     eInner.width(newW);
-    // } else if (newW < 0) {
-    //     eInner.width(0);
-    // } else {
-    //     eInner.width(eOuter.width());
-    // }
 }
 
 minusPB = function(elemID, proportion) {
@@ -63,12 +55,13 @@ resetPB = function(elemID) {
 
 refreshPB = function(elemID) {
     var prop = parseFloat($('#' + elemID + ' .pbInner').attr('prop'));
+    throwMessage("Refreshing progress bar to " + prop);
+
     $('#' + elemID + ' .pbInner').width(prop * $('#' + elemID).width());
 }
 
 getProgressPB = function(elemID) {
     var eInner = $('#' + elemID + ' .pbInner');
-    var eOuter = $('#' + elemID);
-    //return (eInner.width() / eOuter.width());
+
     return (eInner.attr('prop'));
 }
