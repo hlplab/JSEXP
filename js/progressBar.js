@@ -20,11 +20,12 @@
  */
 
 
-installPB = function(elemID) {
+installPB = function(elemID, startProportion) {
     if ($("#" + elemID + " .pbInner").length == 0) {
         $('#' + elemID).append('<div class="pbInner" style="height: 100%; background-color: #339933; width: 0%"></div>');
         $('#' + elemID + ' .pbInner').attr('prop', '0');
     }
+    if (typeof(startProportion) !== 'undefined') setPB(elemID, startProportion);
 }
 
 setPB = function(elemID, proportion) {
@@ -41,7 +42,7 @@ plusPB = function(elemID, proportion) {
 
     setPB(elemID, proportion + parseFloat(eInner.attr('prop')));
     refreshPB(elemID);
-    
+
     // var newW = eInner.width() + eOuter.width() * proportion;
     // if (newW < eOuter.width()) {
     //     eInner.width(newW);
