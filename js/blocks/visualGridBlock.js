@@ -57,6 +57,12 @@ function VisualGridBlock(params) {
         case 'OnNegativeFeedback_blinkNumber':
             this.OnNegativeFeedback_blinkNumber = params[p];
             break;
+            case 'progressBarStartProportion':
+            this.progressBarStartProportion = params[p];
+            break;
+        case 'progressBarEndProportion':
+            this.progressBarEndProportion = params[p];
+            break;
         case 'images':
             this.images = params[p];
             break;
@@ -139,6 +145,8 @@ VisualGridBlock.prototype = {
     ITI_responseToTrialEnd: 2000,
     OnNegativeFeedback_blinkInterval: 400, // how long is the blink on and off for (if it's shown)?
     OnNegativeFeedback_blinkNumber: 8,     // How many blinks are shown? (each blink takes blinkInterval ms)
+    progressBarStartProportion: 0,
+    progressBarEndProportion: 1,
     breakEvery: 100,            // number of trials between breaks
     trialsPerMinute: 12.5,      // NOT YET TESTED. number of trials per minute (based on testing, ~500 trials in 40 mins)
     clickCapture: false,
@@ -209,10 +217,9 @@ VisualGridBlock.prototype = {
         $('img.' + this.namespace + 'image').click(function(e) {_self.handleResp(e);});
 
         // install, initialize, and show a progress bar (progressBar.js)
-        installPB("progressBar");
-        resetPB("progressBar");
+        installPB("progressBar", this.progressBarStartProportion);
         $("#progressBar").show();
-        this.pbIncrement = 1.0 / this.itemOrder.length;
+        this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.itemOrder.length;
     },
 
     takeBreak: function() {
