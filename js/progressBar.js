@@ -42,7 +42,6 @@ plusPB = function(elemID, proportion) {
     var eInner = $('#' + elemID + ' .pbInner');
 
     setPB(elemID, proportion + parseFloat(eInner.attr('prop')));
-    refreshPB(elemID);
 }
 
 minusPB = function(elemID, proportion) {
