@@ -90,8 +90,10 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     if (typeof(block_method) === 'undefined') {
         throwWarning("No block_method provided for ordering stimuli. Setting block_method to 'shuffle'.");
         block_method = 'shuffle_blocks';
-    } else if (!($.inArray(block_method, ['shuffle_blocks', 'large_blocks_first', 'large_blocks_last']))) {
-        throwError("Unknown block_method specified. Should be one of 'shuffle_blocks', 'large_blocks_first', or 'large_blocks_last'. You used: " + block_method);
+    } else if ($.inArray(block_method, ['shuffle_blocks', 'large_blocks_first', 'large_blocks_last']) < 0) {
+        throwError("Unknown block_method specified. Should be one of 'shuffle_blocks', 'large_blocks_first', or 'large_blocks_last'. You used: "
+                   + block_method + ". Note that 'large_blocks_first' keeps blocks in the order they were specified, if all blocks are of the " +
+                   "same length (if all stimuli have the same number of repetitions).");
     }
 
     throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
