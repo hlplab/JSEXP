@@ -225,7 +225,7 @@ VisualGridBlock.prototype = {
     takeBreak: function() {
         var _self = this;
         $("#visualGridContainer").hide();
-        $("#instructions").html('<h3>Break Time!</h3><p>If you\'d like to take a break, you can do that now. Keep in mind that you have a limited amount of time to complete this HIT.</p>').show();
+        $("#instructions").html('<h3>Break Time!</h3><p>If you\'d like to take a break for a few minutes, you can do that now. Keep in mind that you have a limited amount of time to complete this HIT.</p><p>We appreciate your continued attention to the experiment. We recognize it can be tiring.</p>').show();
         continueButton(function() {
                            $("#instructions").hide();
                            $("#visualGridContainer").show();
