@@ -45,8 +45,8 @@ function VisualGridBlock(params) {
         case 'ITI_trialStartToImages':
             this.ITI_trialStartToImages = params[p];
             break;
-        case 'ITI_imagesToAudioStart':
-            this.ITI_imagesToAudioStart = params[p];
+        case 'ITI_imagesToNextEvent':
+            this.ITI_imagesToNextEvent = params[p];
             break;
         case 'ITI_responseToTrialEnd':
             this.ITI_responseToTrialEnd = params[p];
@@ -141,7 +141,7 @@ VisualGridBlock.prototype = {
     randomizeImagePositions: true,
     imagePositions: ['topleft', 'topright', 'bottomleft', 'bottomright'],
     ITI_trialStartToImages: 1000,  // time from trial start to showing pictures
-    ITI_imagesToAudioStart: 2000,  // time from trial to start to audio play (only relevant if autoAdvanceReady == T)
+    ITI_imagesToNextEvent: 2000,  // time from trial to start to audio play (only relevant if autoAdvanceReady == T)
     ITI_responseToTrialEnd: 2000,
     OnNegativeFeedback_blinkInterval: 400, // how long is the blink on and off for (if it's shown)?
     OnNegativeFeedback_blinkNumber: 8,     // How many blinks are shown? (each blink takes blinkInterval ms)
@@ -210,7 +210,7 @@ VisualGridBlock.prototype = {
                        $(this).hide().siblings('img#wait').show();
                        // play stimulus and wait for response
                        _self.handlePlay();
-                   });
+            });
         }
 
         // install click handler on the stimulus images
@@ -239,14 +239,19 @@ VisualGridBlock.prototype = {
         $('#readyWaitContainer img#wait').show();
         // after ITI_trialStartToImages, turn on "ready" light, and display images
         setTimeout(function() {
-                       $('#readyWaitContainer img#wait').hide().siblings('img#ready').show();
                        _self.showStimImages();
                    }, _self.ITI_trialStartToImages);
 
         // If trials ARE to auto-advance from the ready to play state,
-        // initiate the play state after ITI_imagesToAudioStart
-        if (this.autoAdvanceReady) setTimeout(function() {
-          _self.handlePlay(); }, _self.ITI_imagesToAudioStart);
+        // initiate the play state after ITI_imagesToNextEvent
+        if (this.autoAdvanceReady) {
+          setTimeout(function() {
+                     _self.handlePlay(); }, _self.ITI_imagesToNextEvent);
+        } else {
+          setTimeout(function() {
+                         $('#readyWaitContainer img#wait').hide().siblings('img#ready').show();
+                     }, _self.ITI_imagesToNextEvent);
+        }
     },
 
     handlePlay: function() {
