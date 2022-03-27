@@ -37,10 +37,10 @@ function VisualGridBlock(params) {
             namespace = params[p];
             break;
         case 'allowFeedback':
-            this.allowFeedback = params[p];
+            this.allowFeedback = parseBoolean(params[p]);
             break;
         case 'autoAdvanceReady':
-            this.autoAdvanceReady = params[p];
+            this.autoAdvanceReady = parseBoolean(params[p]);
             break;
         case 'ITI_trialStartToImages':
             this.ITI_trialStartToImages = params[p];

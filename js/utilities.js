@@ -196,3 +196,34 @@ String.prototype.format = function() {
     ;
   });
 };
+
+
+function parseBoolean(value) {
+  if (Array.isArray(value)) {
+    value.map(function(e) {
+        e = parseBoolean(e);
+        return e;
+    });
+    return value;
+  } else if (typeof(value) === 'boolean') {
+    return value;
+  } else if (typeof(value) === 'string') {
+    value = value.toLowerCase;
+    switch(value) {
+      case "t":
+      case "true":
+      case "1":
+      case "yes":
+        return true;
+      case "f":
+      case "false":
+      case "0":
+      case "no":
+        return false;
+      default:
+        throwError("Unable to convert string into boolean where boolean expected: " + value);
+    }
+  } else {
+    throwError("Unrecognized type where boolean expected: " + typeof(value));
+  }
+}
