@@ -208,7 +208,7 @@ function parseBoolean(value) {
   } else if (typeof(value) === 'boolean') {
     return value;
   } else if (typeof(value) === 'string') {
-    value = value.toLowerCase;
+    value = value.toLowerCase();
     switch(value) {
       case "t":
       case "true":
