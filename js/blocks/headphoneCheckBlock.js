@@ -41,6 +41,17 @@ function HeadphoneCheckBlock(params) {
   }
 }
 
+// Optional: function to display the result after completing the test.
+function showResult(result) {
+  let resultMessage = result ? 'Pass' : 'Fail';
+  $('#hc-container').append('<div id="testResults" style="width: 100%; text-align: center; font-size: 3em;"></div>');
+  $('#testResults')
+      .append('<p style="margin-top: 1em;">' + resultMessage + '</p>')
+      .append('<p>' + headphonesCheck.attemptRecord[headphonesCheck.attemptCount].numberCorrect + ' out of 6 correct<br>after ' + headphonesCheck.attemptCount + ' attempt(s).<br>(The pass mark is 6.)</p>')
+}
+// end of headphone specific code (except for call to these functions below)
+
+
 HeadphoneCheckBlock.prototype = {
     parentDiv: '#textContainer',
     items: undefined,
@@ -54,10 +65,19 @@ HeadphoneCheckBlock.prototype = {
         var _self = this;
         // create DOM elements (container div, instructions div, and items list)
         $('<div></div>')
+            .attr('id', 'headphoneCheck')
+            .appendTo(this.parentDiv);
+        // add validation checkbox for easy validation checking
+        $('<input type="checkbox" />')
+            .css('display', 'none')
+            .addClass('validation')
+            .attr('id', 'headphoneCheckValidationFlag')
+            .appendTo('#headphoneCheck');
+        $('<div></div>')
             // ID 'hc-contained' of div required by the script imported from McDermott lab
             // (https://github.com/mcdermottLab/HeadphoneCheck)
             .attr('id', 'hc-container')
-            .appendTo(this.parentDiv);
+            .appendTo('#headphoneCheck');
         $('<div></div>')
             .attr('id', 'headphoneCheckInstructions')
             .html(this.instructions)
@@ -67,12 +87,24 @@ HeadphoneCheckBlock.prototype = {
           $(document).on('hcHeadphoneCheckEnd', function(event, data) {
               _self.headphoneCheckDidPass = data.didPass;
               _self.headphoneCheckData = data.data;
-              _self.didPassMessage = _self.headphoneCheckDidPass ? 'passed' : 'failed';
-              alert('Screening task ' + '. ' + _self.headphoneCheckData.totalCorrect + '/' + _self.headphoneCheckData.stimIDList.length + ' trials correct');
+
+              var headphoneCheckMessage = ' (' + _self.headphoneCheckData.totalCorrect + '/' + _self.headphoneCheckData.stimIDList.length + ' trials correct). ';
+              if (_self.headphoneCheckDidPass) {
+                headphoneCheckMessage = 'Thank you. You passed the headphones test' + headphoneCheckMessage;
+              } else {
+                headphoneCheckMessage = 'Thank you. Unfortunately, your headphones did not pass the test' + headphoneCheckMessage +
+                                        'You will not be able to take this HIT. We apologize for the inconvenience. ' +
+                                        '<font color="red"><strong>Please return this HIT.</strong></font>';
+              }
+
+              $('#hc-container').append('<div><p>' + headphoneCheckMessage + '</p></div>');
+              // Update validation flag
+              $('#headphoneCheckValidationFlag')
+                  .prop('checked', _self.headphoneCheckDidPass);
           });
 
           HeadphoneCheck.runHeadphoneCheck({
-            totalTrials: 8, // Total number of trials.
+            totalTrials: 6, // Total number of trials.
             trialsPerPage: 1, // Number of trials to render on a single page.
             correctThreshold: 5/6, // Minimum percentage of correct responses required to pass the headphone screening.
             useSequential: true, // If true, trials must be completed in order from first to last.
@@ -83,35 +115,23 @@ HeadphoneCheckBlock.prototype = {
         } else if (this.implementation === 'ChaitLab') {
           // Add headphone check
           const headphonesCheck = new HeadphonesCheck();
-
-          // Optional: function to display the result after completing the test.
-          function showResult(result) {
-            let resultMessage = result ? 'Pass' : 'Fail';
-            $('hc-container').append('<div id="testResults" style="width: 100%; text-align: center; font-size: 3em;"></div>');
-            $('#testResults')
-                .append('<p style="margin-top: 1em;">' + resultMessage + '</p>')
-                .append('<p>' + headphonesCheck.attemptRecord[headphonesCheck.attemptCount].numberCorrect + ' out of 6 correct<br>after ' + headphonesCheck.attemptCount + ' attempt(s).<br>(The pass mark is 6.)</p>')
-          }
-          // end of headphone specific code (except for call to these functions below)
-
           headphonesCheck.checkHeadphones(showResult);
         }
 
         // return top-level div to allow chaining/embedding
-        return($('#hc-container'));
+        return($('#headphoneCheck'));
     },
 
     check: function() {
-        // make sure all are correct (look for ones without "correct" class)
-        // if ($('input.headphoneCheckAnswer:not(.correct)').addClass('fixme').length) {
-        //     return(false);
-        // } else {
-        //     return(true);
-        // }
+        if (this.headphoneCheckDidPass) {
+            return(true);
+        } else {
+            return(false);
+        }
     },
 
     endBlock: function() {
-        $('div#hc-container').hide();
+        $('div#headphoneCheck').hide();
         this.onEndedBlock();
     },
 
