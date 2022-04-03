@@ -50,9 +50,9 @@ function SoundcheckBlock(params) {
 SoundcheckBlock.prototype = {
     parentDiv: '#textContainer',
     items: undefined,
-    instructions: '<h3>Sound check</h3>' +
-        '<p>You should complete this experiment in a quiet environment without any distractions, using headphones (preferred) or speakers set to the highest comfortable volume.</p>' +
-        '<p>To ensure that your audio is working properly, you must complete the following sound test. Click on each button below to play a word, and type the words in the boxes provided. You can play the soundfiles as many times as you need to to set your volume to the right level. If you enter one of the words incorrectly, you will be prompted to retry until you have entered them correctly.</p>',
+    instructions: 'Please complete the following sound test to make sure your browser is compatible with this experiment, and that your sound volume is set to a ' +
+              'comfortable level. It is important that you keep the same volume throughout the experiment. Enter the word that you hear into each box.',
+
     init: function() {
         var _self = this;
         // create DOM elements (container div, instructions div, and items list)
