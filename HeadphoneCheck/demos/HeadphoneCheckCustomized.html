@@ -1,0 +1,58 @@
+<!--
+BSD 2-Clause License
+
+Copyright (c) 2017, The HeadphoneCheck Authors (see AUTHORS)
+All rights reserved.
+
+Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
+=======================================================================
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Import jQuery from Google CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Import HeadphoneCheck.js  -->
+    <script type="text/javascript" src="../HeadphoneCheck.js"></script>
+    <!-- Import HeadphoneCheck.css -->
+    <link rel="stylesheet" type="text/css" href="../HeadphoneCheckStyle.css">
+    <script>
+      $(document).ready(function() {
+        // Bind callback to hcHeadphoneCheckEnd event
+        $(document).on('hcHeadphoneCheckEnd', function(event, data) {
+          var results = data.data;
+          var config = data.config;
+          var didPass = data.didPass;
+
+          if (didPass) {
+            $('<div/>', {
+              html: 'Screening task passed.<br/>totalCorrect: ' + results.totalCorrect
+            }).appendTo($('body'));
+          }
+          else {
+            $('<div/>', {
+              html: 'Screening task failed.<br/>totalCorrect: ' + results.totalCorrect
+            }).appendTo($('body'));
+          }
+        });
+
+        // customize the headphone check
+        var headphoneCheckConfig = {
+                                      jsonPath: 'headphoneCheckDefaultStimuliLocal.json',
+                                      totalTrials: 3,
+                                      trialsPerPage: 2,
+                                      correctThreshold: 1/3,
+                                      useSequential: true,
+                                      doShuffleTrials: true,
+                                      sampleWithReplacement: true,
+                                      doCalibration: false,
+                                      debug: false,
+                                   };
+        HeadphoneCheck.runHeadphoneCheck(headphoneCheckConfig);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="hc-container"></div>
+  </body>
+</html>

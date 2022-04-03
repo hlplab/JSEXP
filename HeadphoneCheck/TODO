@@ -1,0 +1,56 @@
+TODO:
+-----
+  - check browser compatibility
+  - document public API
+  - documentation?
+
+DONE:
+-----
+x - document events
+x  - move to public github
+x  - rename to HeadphoneCheck
+x  - update package.json github
+x  - readme
+x  - demos
+x  - add authors to every file
+x  - defaults
+x  - Put example sounds on AWS S3
+x  - grunt project and minify
+x  - when browser is thin (say half of screen size on laptop), the response text
+    flows onto multiple lines for some but not all responses. it should be the
+    same for all.
+x - shouldn't allow playing the next sound before responding to the current one
+x - How to check correctness?: naively
+x - API
+x - add events
+x - document
+x - errors on dumb
+x - calibration
+x - ajax fetch to async
+x - branch for progress caching, then remove progress caching and merge to master
+x - calibration sound should be configurable
+x - Sample with replacement
+x - handle ajax error
+x - random with replacement
+x - fire events on all major state changes (in parenthesis means not required)
+x    + overall begin/end
+x    + stim json success/fail/done
+x    + calibration begin/end
+x    + headphone check begin/end
+x - fine grained detail of response per trial: implemented per trial score
+x - do we need a more fine grained warning/feedback system?: kind of implemented this for sequential trials
+  - check playback counters if `requirePlayback` is false
+x - json schema -> what if IDs aren't unique?: shouldn't matter, each trials has a unique index prefix
+x - render finished page?: this is the user's responsibility
+
+DEFERRED:
+---------
+DEFER  - figure out how to handle css styles properly
+DEFER  - support for multiple audio sources
+DEFER  - fix audio source type
+DEFER    + Fire event on (renderHTMLPage with pageNum data)
+DEFER    + Fire event on (per trial rendering seems like overkill)
+DEFER  - local storage progress caching
+DEFER    + we need to track per trial responses and playback status (probably easier than inferring from disabled button states)
+DEFER - refactor all callback and event binding to single function? it's pretty messy as it is
+
