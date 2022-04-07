@@ -368,8 +368,10 @@ VisualGridBlock.prototype = {
 
         setTimeout(function() {
           throwMessage("Playing audio again at time " + Date.now());
-          document.getElementById('trialAudio').currentTime = 0;
-          document.getElementById('trialAudio').play(); }, delayReplay);
+          $('.' + _self.namespace + 'audio').currentTime = 0;
+          $('.' + _self.namespace + 'audio').trigger('play');
+        }, delayReplay);
+
 
       } else {
         // hide all images except the clicked one
