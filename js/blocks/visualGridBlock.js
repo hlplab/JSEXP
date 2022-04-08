@@ -363,7 +363,7 @@ VisualGridBlock.prototype = {
         if (wrongAnswer) {
           throwMessage("Blinking target at time " + Date.now());
           // COULD ADD BELL RING HERE?
-          blinkId(this.stims.target_words[this.itemOrder[this.n]], this.OnNegativeFeedback_blinkInterval / 2, this.OnNegativeFeedback_blinkNumber);
+          blinkId(document.querySelectorAll("img#" + _self.stims.target_words[_self.itemOrder[_self.n]] + "." + _self.namespace + 'image')[0], _self.OnNegativeFeedback_blinkInterval / 2, _self.OnNegativeFeedback_blinkNumber);
         }
 
         setTimeout(function() {
@@ -538,18 +538,17 @@ VisualGridBlock.prototype = {
 };
 
 
-function blinkId(id, interval, times) {
-	var elem = document.getElementById(id);
-  var count = 1;
+function blinkId(element, interval, times) {
+      var count = 1;
 
-  var intervalId = setInterval(function() {
-    if (elem.style.visibility == 'hidden') {
-      console.log("blinkiblink");
-        elem.style.visibility = 'visible';
-        // increment counter when showing to count # of blinks and stop when visible
-        if (count++ === times) { clearInterval(intervalId); }
-    } else {
-        elem.style.visibility = 'hidden';
-    }
-  }, interval);
+      var intervalId = setInterval(function() {
+        if (element.style.visibility == 'hidden') {
+          throwMessage("blinkiblink");
+            element.style.visibility = 'visible';
+            // increment counter when showing to count # of blinks and stop when visible
+            if (count++ === times) { clearInterval(intervalId); }
+        } else {
+            element.style.visibility = 'hidden';
+        }
+      }, interval);
 }
