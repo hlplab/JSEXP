@@ -178,7 +178,7 @@ InstructionsSubsectionsBlock.prototype = {
                            alert('Please read and check the necessary items before you continue.');
                            $(uncheckedItems).parents('.listcontent').show();
                        } else {
-                            if (e.previewMode) {
+                            if (_self.previewMode) {
                                 alert('End of preview. You must accept this HIT before continuing.');
                                 return;
                             }
