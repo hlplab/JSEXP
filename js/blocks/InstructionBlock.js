@@ -75,8 +75,8 @@ InstructionsSubsectionsBlock.prototype = {
             .append('<h3>Begin the experiment</h3>')
             .append($('<div></div>')
                     .addClass('listcontent')
-                    .append('<p>Once you press Start, these instructions will disappear, so make sure you understand them fully before you start.</p>')
-                    .append('<button type="button" id="endinstr">I confirm that I meet the requirements for this HIT, that I have read and understood the instructions and the consent form, and that I want to start the experiment.</button>'))
+                    .append('<p>Once you press the green button, these instructions will disappear, so make sure you understand them fully before you click.</p>')
+                    .append('<button type="button" id="endinstr">I confirm that I meet the requirements for this experiment, that I have read and understood the instructions and the consent form, and that I want to start the experiment.</button>'))
             .appendTo(instList);
 
         // iterate over subsections, parsing, formatting, and adding each

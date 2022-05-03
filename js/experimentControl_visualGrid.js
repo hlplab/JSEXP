@@ -31,9 +31,9 @@ function Experiment(obj) {
     this.cookie = obj.cookie;
     this.survey = obj.survey; //TODO: make this a list of surveys?
     this.urlparams = gupo();
-    this.consentFormDiv = '<div id="consent">By accepting this HIT, you confirm that you have read and understand the <a target="_blank" href="' + obj.rsrbConsentFormURL +
+    this.consentFormDiv = '<div id="consent">By continuing this experiment, you confirm that you have read and understand the <a target="_blank" href="' + obj.rsrbConsentFormURL +
         '">consent form</a>, that you are willing to participate in this experiment, and that you agree that the data you provide by participating can be used in scientific publications (no identifying information will be published). ' +
-        'Sometimes we share non-identifying data elicited from you &mdash; including sound files &mdash; with other researchers for scientific purposes (your MTurk ID will be replaced with an arbitrary alphanumeric code).</div>';
+        'Sometimes we share non-identifying data elicited from you &mdash; including sound files &mdash; with other researchers for scientific purposes (your MTurk/Prolific ID will be replaced with an arbitrary alphanumeric code).</div>';
     //Record random string as identifier
     this.randomID = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     this.sandboxmode = checkSandbox(this.urlparams);
