@@ -326,12 +326,12 @@ Experiment.prototype = {
             // any parameter not undefined is assumed to be an error, so record it and then wrap up.
             $("#errorMessage").html('<h3>We apologize for the inconvenience</h3>' +
               why +
-              '<p><strong>You can <a target="_blank" href="mailto: hlplab@gmail.com">email us</a> with any questions.</strong></p>' +
-              '<p>In case you encountered a technical error, we can best help you if you include a screen shot of ' +
-              'this page in your email. If you know your operating system (Windows, MacOS, etc. with version number), ' +
+              '<p><strong>You can <a target="_blank" href="mailto: hlplab@gmail.com">email us</a> with any questions.</strong>' +
+              'In case you encountered a technical error, we can best help you if you include a screen shot of ' +
+              'this page in your email. If you also know your operating system (Windows, MacOS, etc. with version number), ' +
               'device type (phone, tablet, laptop/pc, etc.), and browser (e.g., Chrome, Firefox, or Safari--best with ' +
               'version number) that can help us to further narrow down the issue. Thank you!</p>' +
-              '<p><strong>Please return the experiment/HIT.</p>');
+              '<p><strong>We would appreciate if you return the experiment/HIT.</p>');
             $("#errorMessage").show();
             $("#instructions").hide();
         }
