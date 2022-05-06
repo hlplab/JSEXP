@@ -38,6 +38,7 @@ function Experiment(baseobj) {
 Experiment.prototype = {
   // defaults
   platform: 'mturk',
+  requiredURLparams: [],
   blocks: [],
   blockn: undefined,
   cookie: 'alreadyDoneCookie',
@@ -45,16 +46,30 @@ Experiment.prototype = {
   rsrbConsentFormURL: '',
 
   init: function() {
+      var _self = this;
       this.blockn = 0;
 
-      // read in URL parameters
+      // Read in URL parameters
       this.urlparams = gupo();
 
       // Determine whether the experiment is run in debug mode. This activates several shortcuts through
       // the experiment and makes otherwise invisible information visible. Set URL param debug=TRUE.
       this.debugMode = checkDebug(this.urlparams);
-      if (this.debugMode) {
-        throwMessage("Entering VERBOSE (debugging) mode.");
+
+      // Check whether required URL parameters are present. If not, enter debug mode.
+      // This code chunk needs to be after debug mode has been read.
+      if (this.requiredURLparams.length > 0) {
+        throwMessage("Checking whether all required URL parameters were provided.")
+        var missing_urlparams = [];
+        for (let i = 0; i < this.requiredURLparams.length; i++) {
+          if (this.urlparams[this.requiredURLparams[i]] === undefined) missing_urlparams.push(this.requiredURLparams[i]);
+        }
+        if (missing_urlparams.length > 0) {
+          this.debugMode = enterDebug();
+          throwError('The following ' + missing_urlparams.length + ' URL parameter(s) are indicated as required but were not found: ' + missing_urlparams.join());
+          alert("Something went wrong and we are lacking information to start the experiment. This is most likely due to technical issues experienced by MTurk/Prolific. We apologize for the inconvenience. If you could take a screenshot and email it to us along with your operating system (Windos/MacOS/etc.) and web browser (incl. version numbers) that will help us debug the experiment. If you know how to take a screenshot of your Javascript console that information would help us to more quickly resolve the issue. Thank you very much!");
+          return false;
+        }
       }
 
       // Check whether URLPARAMs specified different platform than handed to experiment object.
@@ -131,7 +146,7 @@ Experiment.prototype = {
       if (IE < 9 || Safari > 13 || navigator.userAgent.includes('Firefox/')) {
         $("#errorMessage").show();
         $("#instructions").hide();
-        throwWarning("Incompatible browser detected");
+        throwWarning("Incompatible browser detected.");
         return false;
       }
 
@@ -178,7 +193,7 @@ Experiment.prototype = {
                       // set protocol number
                       $('input[name="rsrb.protocol"]:hidden').val(rsrbNum);
                       throwMessage('Name of RSRB protocol: ' + rsrbNum + '\nRSRB information written into form field: ' + $('input[name="rsrb.protocol"]').val() + "\n(this value is expected to be undefined unless you are sandboxing or live)");
-                  }));
+      }));
 
   },
 
