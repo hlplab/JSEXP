@@ -46,6 +46,7 @@ Experiment.prototype = {
   rsrbConsentFormURL: '',
 
   init: function() {
+      this.experimentWrappingUp = false;
       this.blockn = 0;
 
       // Read in URL parameters
@@ -129,8 +130,7 @@ Experiment.prototype = {
       if (IE < 9 || Safari > 13 || navigator.userAgent.includes('Firefox/')) {
         $("#errorMessage").show();
         $("#instructions").hide();
-        throwWarning("Incompatible browser detected.");
-        return false;
+        this.wrapup('<p>A technical error occurred. Your browser is not compatible with the current experiment.</p>');
       }
 
       // check for video and audio support, and if it's missing show a message
@@ -141,17 +141,12 @@ Experiment.prototype = {
       } else {
         $("#errorMessage").show();
         $("#instructions").hide();
-        throwWarning("Browser can't play both audio and video formats.");
-        return false;
+        this.wrapup('<p>A technical error occurred. Your browser is not compatible with the current experiment since it cannot play the required audio & video formats.</p>');
       }
 
       var cookie = readCookie(this.cookie);
       if (!this.sandboxmode && !this.debugMode && cookie) {
-        $("#errorMessage").html('<p>It looks like you have already completed this HIT (or reloaded this HIT) or a similar version of this HIT.</p><p>Please <strong>do not accept this HIT</strong>, your results will be automatically rejected.</p><p>If you accidentally reloaded this HIT, please do not continue. Instead, please <a target="_blank" href="mailto: hlplab@gmail.com">email us</a>.</p>');
-        $("#errorMessage").show();
-        $("#instructions").hide();
-        throwWarning("Cookie detected.");
-        return false;
+        this.wrapup('<p>It looks like you have already completed this experiment (or reloaded it) or a similar experiment.</p>');
       }
       createCookie(this.cookie, 1, 365);
 
@@ -181,16 +176,17 @@ Experiment.prototype = {
       // Check whether required URL parameters are present. If not, enter debug mode.
       // This code chunk needs to be after debug mode has been read.
       if (this.requiredURLparams.length > 0) {
-        throwMessage("Checking whether all required URL parameters were provided.")
+        throwMessage("Checking whether all required URL parameters were provided.");
         var missing_urlparams = [];
         for (let i = 0; i < this.requiredURLparams.length; i++) {
           if (this.urlparams[this.requiredURLparams[i]] === undefined) missing_urlparams.push(this.requiredURLparams[i]);
         }
         if (missing_urlparams.length > 0) {
           this.debugMode = enterDebug();
-          throwError('The following ' + missing_urlparams.length + ' URL parameter(s) are indicated as required but were not found: ' + missing_urlparams.join());
-          alert("Something went wrong and we are lacking information to start the experiment. This is most likely due to technical issues experienced by MTurk/Prolific. We apologize for the inconvenience. If you could take a screenshot and email it to us along with your operating system (Windos/MacOS/etc.) and web browser (incl. version numbers) that will help us debug the experiment. If you know how to take a screenshot of your Javascript console that information would help us to more quickly resolve the issue. Thank you very much!");
-          return false;
+          this.wrapup('<p>A technical error occurred. The following ' + missing_urlparams.length +
+                      ' URL parameter(s) are indicated as required but were not found: ' + missing_urlparams.join(", ") +
+                      '. This can happen when Prolific/Mechanical Turk encounter technical issues that are not ' +
+                      'under our control.</p>');
         }
       }
   },
@@ -235,6 +231,8 @@ Experiment.prototype = {
     },
 
     nextBlock: function() {
+        if (this.experimentWrappingUp) return false;
+
         // pull out block object holder, but don't increment block counter yet
         scroll(0,0);
         var this_block = this.blocks[this.blockn];
@@ -296,6 +294,7 @@ Experiment.prototype = {
 
     wrapup: function(why) {
         throwMessage("Wrapping up experiment.");
+        this.experimentWrappingUp = true;
 
         if (typeof(why) === 'undefined') {
           // success
@@ -308,13 +307,19 @@ Experiment.prototype = {
           // which steps through the demographics (RSRB) and post-experiment surveys and then submits.
           continueButton(end_surveys_and_submit);
         } else {
-            // error?
-            // any parameter not undefined is assumed to be an error, so record it and then wrap up.
-            $("#experimentStatus").append("wrapup called: " + why + "<br />");
-            $("#errors").val($("#errors").val() + why + RESP_DELIM);
-            $("#instructions").html("<h3>Experiment is over</h3>" +
-                                    "<p>Unfortunately, we were not able to calibrate the experiment to your hearing and audio system, and this is the end of the experiment.  If you have any comments, please write them in the box below before submitting this HIT.  Thank you for participating.</p>")
-                .show();
+          // error?
+          // any parameter not undefined is assumed to be an error, so record it and then wrap up.
+          $("#errorMessage").html('<h3>We apologize for the inconvenience</h3>' +
+            why +
+            '<p><strong>You can <a target="_blank" href="mailto: hlplab@gmail.com">email us</a> with any questions.</strong></p>' +
+            '<p>In case you encountered a technical error, we can best help you if you include a screen shot of ' +
+            'this page in your email. If you know your operating system (Windows, MacOS, etc. with version number), ' +
+            'device type (phone, tablet, laptop/pc, etc.), and browser (e.g., Chrome, Firefox, or Safari--best with ' +
+            'version number) that can help us to further narrow down the issue. Thank you!</p>' +
+            '<p><strong>Please return the experiment/HIT.</p>');
+          $("#errorMessage").show();
+          $("#instructions").hide();
+
         }
 
     }
