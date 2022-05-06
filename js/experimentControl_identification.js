@@ -146,7 +146,7 @@ Experiment.prototype = {
 
       var cookie = readCookie(this.cookie);
       if (!this.sandboxmode && !this.debugMode && cookie) {
-        this.wrapup('<p>It looks like you have already completed this experiment (or reloaded it) or a similar experiment.</p>');
+        this.wrapup('<p>It looks like you have already completed this experiment (or reloaded it) or a similar experiment. Unfortunately, this means that we cannot use your data.</p>');
       }
       createCookie(this.cookie, 1, 365);
 
@@ -311,7 +311,7 @@ Experiment.prototype = {
           // any parameter not undefined is assumed to be an error, so record it and then wrap up.
           $("#errorMessage").html('<h3>We apologize for the inconvenience</h3>' +
             why +
-            '<p><strong>You can <a target="_blank" href="mailto: hlplab@gmail.com">email us</a> with any questions.</strong>' +
+            '<p><strong>You can <a target="_blank" href="mailto: hlplab@gmail.com">email us</a> with any questions. </strong>' +
             'In case you encountered a technical error, we can best help you if you include a screen shot of ' +
             'this page in your email. If you also know your operating system (Windows, MacOS, etc. with version number), ' +
             'device type (phone, tablet, laptop/pc, etc.), and browser (e.g., Chrome, Firefox, or Safari--best with ' +
