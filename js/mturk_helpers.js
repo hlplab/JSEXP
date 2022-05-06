@@ -85,6 +85,7 @@ function checkDebug(params) {
     if (params['debug']) {
         debugMode = true;
         throwMessage("This is the VERBOSE (debugging) mode.");
+        alert("You are in debug mode. DON'T FORGET TO CHANGE THIS BEFORE YOU GO LIVE! Click OK to continue.");
         return true;
     } else {
       debugMode = false;
@@ -95,6 +96,7 @@ function checkDebug(params) {
 function enterDebug() {
     debugMode = true;
     throwMessage("You are entering the VERBOSE (debugging) mode.");
+
     return true;
 }
 
