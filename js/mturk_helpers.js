@@ -84,12 +84,20 @@ var debugMode;
 function checkDebug(params) {
     if (params['debug']) {
         debugMode = true;
+        throwMessage("This is the VERBOSE (debugging) mode.");
         return true;
     } else {
       debugMode = false;
       return false;
     }
 }
+
+function enterDebug() {
+    debugMode = true;
+    throwMessage("You are entering the VERBOSE (debugging) mode.");
+    return true;
+}
+
 
 function collect_and_format_form_values(formID)
  {
