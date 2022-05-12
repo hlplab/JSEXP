@@ -70,7 +70,7 @@ function randomOrder(reps, n) {
 function createStimulusOrder(reps, n_total, method, block_method) {
     // If reps is specified as a scalar, convert to an array using n_total. This results in
     // an array of length n_total, each value of which is reps
-    if (typeof(reps) === "number" || reps.length == 1) {
+    if (typeof(reps) === "number") {
         if (typeof(n_total) !== "undefined") {
             reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n_total);
         } else {
