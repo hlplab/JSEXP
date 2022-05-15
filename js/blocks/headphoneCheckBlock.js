@@ -90,7 +90,9 @@ HeadphoneCheckBlock.prototype = {
 
               var headphoneCheckMessage = ' (' + _self.headphoneCheckData.totalCorrect + '/' + _self.headphoneCheckData.stimIDList.length + ' trials correct). ';
               if (_self.headphoneCheckDidPass) {
-                headphoneCheckMessage = 'Thank you. You passed the headphones test' + headphoneCheckMessage;
+                headphoneCheckMessage = 'Thank you. You passed the headphones test' + headphoneCheckMessage +
+                                        "<font color='red'><strong>It is important that you keep your headphones at the same volume throughout " +
+                                        "the experiment.</strong></font> ";
               } else {
                 headphoneCheckMessage = 'Thank you. Unfortunately, your headphones did not pass the test' + headphoneCheckMessage +
                                         'You will not be able to take this HIT. We apologize for the inconvenience. ' +

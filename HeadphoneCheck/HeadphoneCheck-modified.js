@@ -137,15 +137,10 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
     // render boilerplate instruction text
     $('<div/>', {
       class: 'hc-instruction',
-      html: 'When you hit <b>Play</b>, you will hear three sounds separated by silences.'
-    }).appendTo($('#hc-container'));
-    $('<div/>', {
-      class: 'hc-instruction',
-      text: 'Simply judge WHICH SOUND WAS SOFTEST (quietest) -- 1, 2, or 3?'
-    }).appendTo($('#hc-container'));
-    $('<div/>', {
-      class: 'hc-instruction',
-      text: 'Test sounds can only be played once!'
+      html: 'This test consists of ' + headphoneCheckConfig.totalTrials + ' trials. Each trial starts ' +
+            'when you hit <b>Play</b>. You will then hear three sounds separated by silences. Please ' +
+            'select which of the three sounds was softest (quietest) and <strong>then click Continue to ' +
+            'begin the next trial</strong>. Listen carefully. <strong>Each trial can only be played once.</strong><p></p>'
     }).appendTo($('#hc-container'));
 
     if (headphoneCheckConfig.debug) console.log(headphoneCheckData);
@@ -238,10 +233,10 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
     // }).appendTo($('#hc-container'));
     $('<div/>', {
       class: 'hc-calibration-instruction',
-      text: 'First, set your computer volume to about 25% of maximum. ' +
-            'Press the button, then turn up the volume on your computer until the ' +
-            'calibration noise is at a loud but comfortable level. ' +
-            'Play the calibration sound as many times as you like.'
+      html: 'First, set your computer volume to about 25% of maximum. ' +
+            'Press the button, then <strong>turn up the volume on your computer until the ' +
+            'calibration noise is at a loud but comfortable level</strong>. ' +
+            'Play the calibration sound as many times as you like.<p></p>'
     }).appendTo($('#hc-container'));
     $('<div/>', {
       id: 'hc-calibration-div',
@@ -268,7 +263,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
 
     $('<div/>', {
       class: 'hc-calibration-instruction',
-      html: 'Press <b>Continue</b> when level calibration is complete.',
+      html: '<p>Press <strong>Continue</strong> when level calibration is complete.</p>',
     }).appendTo($('#hc-container'));
 
     // Add button to continue
@@ -328,6 +323,11 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
       }))
     .appendTo($('#' + divID));
 
+    $('<div/>', {
+      class: 'hc-instruction',
+      html: '<p></p><p>Which sound was the softest? </p>'
+    }).appendTo($('#' + divID));
+
     //add in the radio buttons for selecting which sound was softest
     $('<div/>', {
       id: 'hc-radio-buttonset-' + stimID,
@@ -336,9 +336,9 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
 
     //give the label info for the buttons
     var radioButtonInfo = [
-                            {'id': '1', 'name': 'FIRST sound was SOFTEST'},
-                            {'id': '2', 'name': 'SECOND sound was SOFTEST'},
-                            {'id': '3', 'name': 'THIRD sound was SOFTEST'},
+                            {'id': '1', 'name': ' <strong>1st</strong> sound '},
+                            {'id': '2', 'name': ' <strong>2nd</strong> sound '},
+                            {'id': '3', 'name': ' <strong>3rd</strong> sound '},
                           ];
 
     $.each(radioButtonInfo, function() {
@@ -346,7 +346,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
       .append($('<label/>', {
           for: 'hc-radio' + this.id + '-stim-' + stimID,
           class: 'hc-radio-label',
-          text: this.name,
+          html: this.name,
         })
       .prepend($('<input/>', {
                 type: 'radio',
@@ -356,6 +356,12 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
                 value: this.id,
               })
       ));
+
+      $('<div/>', {
+        class: 'hc-instruction',
+        html: '<p></p>'
+      }).appendTo($('#' + divID));
+
     });
   }
 
