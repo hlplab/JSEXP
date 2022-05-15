@@ -72,11 +72,14 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     // an array of length n_total, each value of which is reps
     if (typeof(reps) === "number") {
         if (typeof(n_total) !== "undefined") {
-            reps = (function(N) {var x=[]; for (var i=0; i<N; i++) {x[i] = reps;}; return(x);})(n_total);
+            throwMessage("Creating vector of repetitions for a total of " + n_total + "stimuli that will each be shown " + reps + "times.");
+            reps = (function(N) {var x=[]; for (var i=0; i<N; i++) { x[i] = reps; }; return(x); })(n_total);
         } else {
           throwError("Must provide either vector of repetitions (reps) or the total number of stimuli (n_total).");
           return(-1);
         }
+    } else {
+      throwMessage("Found vector of repetitions, specifying how often each stimulus is shown: " + reps);
     }
 
     // Check method of ordering and apply defaults
@@ -96,8 +99,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
                    "same length (if all stimuli have the same number of repetitions).");
     }
 
-    throwMessage("Creating stimulus order for " + reps + " repetitions and a total " + n_total + ".");
-    throwMessage("Using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
+    throwMessage("Creating stimulus order, using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
 
     // Catch cases that don't need further action
     if (method == 'shuffle_across_blocks' | method == 'shuffle') {
