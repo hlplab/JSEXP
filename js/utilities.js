@@ -72,14 +72,14 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     // an array of length n_total, each value of which is reps
     if (typeof(reps) === "number") {
         if (typeof(n_total) !== "undefined") {
-            throwMessage("Creating vector of repetitions for a total of " + n_total + "stimuli that will each be shown " + reps + "times.");
+            throwMessage("Creating vector of repetitions for a total of " + n_total + "stimuli, each to be shown " + reps + "times.");
             reps = (function(N) {var x=[]; for (var i=0; i<N; i++) { x[i] = reps; }; return(x); })(n_total);
         } else {
           throwError("Must provide either vector of repetitions (reps) or the total number of stimuli (n_total).");
           return(-1);
         }
     } else {
-      throwMessage("Found vector of repetitions, specifying how often each stimulus is shown: " + reps);
+      throwMessage("Found vector of repetitions, specifying how often each stimulus is to be shown: " + reps);
     }
 
     // Check method of ordering and apply defaults
@@ -99,7 +99,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
                    "same length (if all stimuli have the same number of repetitions).");
     }
 
-    throwMessage("Creating stimulus order, using stimulus ordering method " + method + " and block ordering method " + block_method + ".");
+    throwMessage("Creating stimulus order with stimulus ordering method " + method + " and block ordering method " + block_method + ".");
 
     // Catch cases that don't need further action
     if (method == 'shuffle_across_blocks' | method == 'shuffle') {
@@ -202,15 +202,18 @@ String.prototype.format = function() {
 
 function parseBoolean(value) {
   if (Array.isArray(value)) {
-    value.map(function(e) {
+    // throwMessage("Converting array into array of booleans.")
+    value = value.map(function(e) {
         e = parseBoolean(e);
         return e;
     });
+    throwMessage(value);
     return value;
   } else if (typeof(value) === 'boolean') {
     return value;
   } else if (typeof(value) === 'string') {
     value = value.toLowerCase();
+    // throwMessage("Converting string " + value + " into boolean.")
     switch(value) {
       case "t":
       case "true":
@@ -221,11 +224,12 @@ function parseBoolean(value) {
       case "false":
       case "0":
       case "no":
+      case "":
         return false;
       default:
-        throwError("Unable to convert string into boolean where boolean expected: " + value);
+        throwError("Unable to convert string into boolean in parseBoolean: " + value);
     }
   } else {
-    throwError("Unrecognized type where boolean expected: " + typeof(value));
+    throwError("Unrecognized type of input in parseBoolean: " + typeof(value));
   }
 }
