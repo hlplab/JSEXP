@@ -349,7 +349,7 @@ VisualGridBlock.prototype = {
         var delayBlink = 0 + wrongAnswer * this.OnNegativeFeedback_blinkNumber * this.OnNegativeFeedback_blinkInterval;
         // time until correct audio is played again
         var delayReplay = 250 + delayBlink;
-        delayEnd = delayEnd + delayReplay;
+        delayEnd += delayReplay;
 
         // hide all images except the target
         $.map(currentStimMapping[this.stims.target_words[this.itemOrder[this.n]]],
@@ -392,7 +392,7 @@ VisualGridBlock.prototype = {
         "Provide feedback on this trial? " + _self.stims.feedback[_self.itemOrder[_self.n]] + "\n" +
         "Answer: " + e.target.id + "\n" +
         "Correct answer: " + _self.stims.target_words[_self.itemOrder[_self.n]] + "\n" +
-        "Was the anwer wrong? " + wrongAnswer + "\n" +
+        "Was the answer wrong? " + wrongAnswer + "\n" +
         "Delay blink: " + delayBlink + "\n" +
         "Delay replay: " + delayReplay + "\n" +
         "Delay end of trial: " + delayEnd);
