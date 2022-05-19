@@ -48,7 +48,7 @@ Experiment.prototype = {
   init: function() {
       // write time at which experiment was started
       var userDateTimeAtInitialization = new Date();
-      writeFormField("userDateTimeAtInitialization", userDateTimeAtInitialization.toUTCString());
+      writeFormField("userDateTimeAtInitialization", userDateTimeAtInitialization.toJSON());
 
       this.experimentWrappingUp = false;
       this.blockn = 0;

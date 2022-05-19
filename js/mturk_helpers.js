@@ -156,7 +156,7 @@ var end_surveys_and_submit = function() {
 
                      // get clients UTC time offset (in minutes) and write into form field
                      var userDateTime = new Date();
-                     writeFormField("userDateTimeAtSubmit", userDateTime.toUTCString());
+                     writeFormField("userDateTimeAtSubmit", userDateTime.toJSON());
                      writeFormField("userDateTimeOffset", userDateTime.getTimezoneOffset());
 
                      // figure out platform and submit
