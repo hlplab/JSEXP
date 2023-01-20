@@ -57,7 +57,7 @@ function VisualGridBlock(params) {
         case 'OnNegativeFeedback_blinkNumber':
             this.OnNegativeFeedback_blinkNumber = params[p];
             break;
-            case 'progressBarStartProportion':
+        case 'progressBarStartProportion':
             this.progressBarStartProportion = params[p];
             break;
         case 'progressBarEndProportion':

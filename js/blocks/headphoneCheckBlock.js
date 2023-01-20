@@ -96,7 +96,7 @@ HeadphoneCheckBlock.prototype = {
               } else {
                 headphoneCheckMessage = 'Thank you. Unfortunately, your headphones did not pass the test' + headphoneCheckMessage +
                                         'You will not be able to take this HIT. We apologize for the inconvenience. ' +
-                                        '<font color="red"><strong>Please return this HIT.</strong></font>';
+                                        '<font color="red"><strong>Please return this HIT/experiment.</strong></font>';
               }
 
               $('#hc-container').append('<div><p>' + headphoneCheckMessage + '</p></div>');

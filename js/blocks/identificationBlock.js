@@ -55,6 +55,12 @@ function IdentificationBlock(params) {
         case 'ITI':
             this.ITI = params[p];
             break;
+        case 'progressBarStartProportion':
+            this.progressBarStartProportion = params[p];
+            break;
+        case 'progressBarEndProportion':
+            this.progressBarEndProportion = params[p];
+            break;
         case 'respKeys':
             this.respKeys = params[p];
             break;
@@ -144,6 +150,8 @@ IdentificationBlock.prototype = {
     tResp: -1,
     tStart: -1,
     ITI: 1000,
+    progressBarStartProportion: 0,
+    progressBarEndProportion: 1,
     auds: [],
     namespace: '',
     catchEndsTrial: true,
@@ -262,7 +270,6 @@ IdentificationBlock.prototype = {
             return false;
         }
 
-
         ////////////////////////////////////////////////////////////////////////////////
         // Randomize stimuli order.
         // default to "calibReps" reps property of this.stimuliObj for reps of each
@@ -284,8 +291,6 @@ IdentificationBlock.prototype = {
           }
         }
 
-        this.pbIncrement = 1.0 / this.stims.length;
-
         ////////////////////////////////////////////////////////////////////////////////
         // Bind handlers for this block:
         // create handler to capture and process keyboard input, and bind to document
@@ -305,9 +310,9 @@ IdentificationBlock.prototype = {
 
         if (!softInit) {
             // install, initialize, and show a progress bar (progressBar.js)
-            installPB("progressBar");
-            resetPB("progressBar");
+            installPB("progressBar", this.progressBarStartProportion);
             $("#progressBar").show();
+            this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.itemOrder.length;
             // DEBUGGING: add button to force start of calibration block (skip preview)
             $('#buttons').append('<input type="button" onclick="calibrationBlock.next()" value="start calibration"></input>');
         }
