@@ -81,8 +81,8 @@ function VisualGridBlock(params) {
         case 'showFamiliarization':
             this.showFamiliarization = params[p];
             break;
-        case 'itemOrder':
-            this.itemOrder = params[p];
+        case 'stimOrder':
+            this.stimOrder = params[p];
             break;
         case 'stimOrderMethod':
             this.stimOrderMethod = params[p];
@@ -135,7 +135,7 @@ function VisualGridBlock(params) {
 VisualGridBlock.prototype = {
     allowFeedback: false,
     autoAdvanceReady: false,
-    itemOrder: undefined,       // if undefined, the item order will be generated based on stimOrderMethod and blockOrderMethod
+    stimOrder: undefined,       // if undefined, the item order will be generated based on stimOrderMethod and blockOrderMethod
     stimOrderMethod: 'dont_randomize',
     blockOrderMethod: 'shuffle_blocks',
     randomizeImagePositions: true,
@@ -193,11 +193,11 @@ VisualGridBlock.prototype = {
         ////////////////////////////////////////////////////////////////////////////////////
         // If not item order was provided, construct list of items and randomize trial order
         ////////////////////////////////////////////////////////////////////////////////////
-        if (typeof(this.itemOrder) === 'undefined') {
+        if (typeof(this.stimOrder) === 'undefined') {
           if (this.stimOrderMethod === 'dont_randomize' & this.blockOrderMethod === 'dont_randomize') {
-            this.itemOrder = Array.apply(0, Array(this.stims.filenames.length)).map(function(_,b) { return b; });
+            this.stimOrder = Array.apply(0, Array(this.stims.filenames.length)).map(function(_,b) { return b; });
           } else {
-            this.itemOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
+            this.stimOrder = createStimulusOrder(this.stims.reps, undefined, this.stimOrderMethod, this.blockOrderMethod);
           }
         }
 
@@ -219,7 +219,7 @@ VisualGridBlock.prototype = {
         // install, initialize, and show a progress bar (progressBar.js)
         installPB("progressBar", this.progressBarStartProportion);
         $("#progressBar").show();
-        this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.itemOrder.length;
+        this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.stimOrder.length;
     },
 
     takeBreak: function() {
@@ -274,12 +274,12 @@ VisualGridBlock.prototype = {
         // Load the relevant sound file while the images are being shown
         $('.' + this.namespace + 'audio')
             .attr('id', 'trialAudio')
-            .attr('src', this.stims.prefix + this.stims.filenames[this.itemOrder[this.n]])
+            .attr('src', this.stims.prefix + this.stims.filenames[this.stimOrder[this.n]])
             .trigger('load');
 
         // Get the image mapping for the current trial
-        var currentStimMapping = this.imageMapping[this.stims.image_selections[this.itemOrder[this.n]]];
-        $.map(currentStimMapping[this.stims.target_words[this.itemOrder[this.n]]],
+        var currentStimMapping = this.imageMapping[this.stims.image_selections[this.stimOrder[this.n]]];
+        $.map(currentStimMapping[this.stims.target_words[this.stimOrder[this.n]]],
               function(image, i) {
                   $('img#' + image + '.' + _self.namespace + 'image')
                       .addClass('vw_trialimage')
@@ -308,17 +308,17 @@ VisualGridBlock.prototype = {
 
     info: function() {
         // // pull out stimulus file basename for current trial
-        // var curStimSrc = this.stims.filenames[this.itemOrder[this.n]];
+        // var curStimSrc = this.stims.filenames[this.stimOrder[this.n]];
         // Go over the stimulus list fields, and extract information about the current trial
         // from all (and only) fields that are objects (the arrays).
         var currentStimuliInfo = [];
         for (v in this.stims) {
             if (typeof this.stims[v] === 'object') {
                 // Extract the information for the present item
-                currentStimuliInfo.push(this.stims[v][this.itemOrder[this.n]]);
+                currentStimuliInfo.push(this.stims[v][this.stimOrder[this.n]]);
             }
         }
-        return [this.namespace, this.allowFeedback, this.n, this.itemOrder[this.n], currentStimuliInfo].join();
+        return [this.namespace, this.allowFeedback, this.n, this.stimOrder[this.n], currentStimuliInfo].join();
     },
 
     recordResp: function(e) {
@@ -337,14 +337,14 @@ VisualGridBlock.prototype = {
     handleFeedback: function(e) {
       throwMessage('Handle feedback.');
       var _self = this;
-      var currentStimMapping = this.imageMapping[this.stims.image_selections[this.itemOrder[this.n]]];
+      var currentStimMapping = this.imageMapping[this.stims.image_selections[this.stimOrder[this.n]]];
       var delayEnd = this.ITI_responseToTrialEnd;
 
       if (typeof(this.stims.feedback) === 'undefined') throwError("Feedback for this trial not defined.");
 
       // Are all conditions met to provide feedback?
-      if (this.allowFeedback && this.stims.feedback[this.itemOrder[this.n]]) {
-        var wrongAnswer = e.target.id !== this.stims.target_words[this.itemOrder[this.n]];
+      if (this.allowFeedback && this.stims.feedback[this.stimOrder[this.n]]) {
+        var wrongAnswer = e.target.id !== this.stims.target_words[this.stimOrder[this.n]];
         // duration of visual blink (if click was wrong)
         var delayBlink = 0 + wrongAnswer * this.OnNegativeFeedback_blinkNumber * this.OnNegativeFeedback_blinkInterval;
         // time until correct audio is played again
@@ -352,9 +352,9 @@ VisualGridBlock.prototype = {
         delayEnd += delayReplay;
 
         // hide all images except the target
-        $.map(currentStimMapping[this.stims.target_words[this.itemOrder[this.n]]],
+        $.map(currentStimMapping[this.stims.target_words[this.stimOrder[this.n]]],
             function(image, i) {
-              if (image != _self.stims.target_words[_self.itemOrder[_self.n]]) {
+              if (image != _self.stims.target_words[_self.stimOrder[_self.n]]) {
                 $('img#' + image + '.' + _self.namespace + 'image')
                     .hide();
                   }
@@ -363,7 +363,7 @@ VisualGridBlock.prototype = {
         if (wrongAnswer) {
           throwMessage("Blinking target at time " + Date.now());
           // COULD ADD BELL RING HERE?
-          blinkId(document.querySelectorAll("img#" + _self.stims.target_words[_self.itemOrder[_self.n]] + "." + _self.namespace + 'image')[0], _self.OnNegativeFeedback_blinkInterval / 2, _self.OnNegativeFeedback_blinkNumber);
+          blinkId(document.querySelectorAll("img#" + _self.stims.target_words[_self.stimOrder[_self.n]] + "." + _self.namespace + 'image')[0], _self.OnNegativeFeedback_blinkInterval / 2, _self.OnNegativeFeedback_blinkNumber);
         }
 
         setTimeout(function() {
@@ -375,7 +375,7 @@ VisualGridBlock.prototype = {
 
       } else {
         // hide all images except the clicked one
-        $.map(currentStimMapping[this.stims.target_words[this.itemOrder[this.n]]],
+        $.map(currentStimMapping[this.stims.target_words[this.stimOrder[this.n]]],
             function(image, i) {
               if (image != e.target.id) {
                 $('img#' + image + '.' + _self.namespace + 'image')
@@ -387,11 +387,11 @@ VisualGridBlock.prototype = {
       throwMessage(
         "Current block: " + _self.namespace + "\n" +
         "Current trial: " + _self.n + "\n" +
-        "Current item: " + _self.itemOrder[_self.n] + "\n" +
+        "Current item: " + _self.stimOrder[_self.n] + "\n" +
         "Allow feedback in this block? " + _self.allowFeedback + "\n" +
-        "Provide feedback on this trial? " + _self.stims.feedback[_self.itemOrder[_self.n]] + "\n" +
+        "Provide feedback on this trial? " + _self.stims.feedback[_self.stimOrder[_self.n]] + "\n" +
         "Answer: " + e.target.id + "\n" +
-        "Correct answer: " + _self.stims.target_words[_self.itemOrder[_self.n]] + "\n" +
+        "Correct answer: " + _self.stims.target_words[_self.stimOrder[_self.n]] + "\n" +
         "Was the answer wrong? " + wrongAnswer + "\n" +
         "Delay blink: " + delayBlink + "\n" +
         "Delay replay: " + delayReplay + "\n" +
@@ -419,7 +419,7 @@ VisualGridBlock.prototype = {
           .hide();
 
           // next trial, or end
-          if (++_self.n < _self.itemOrder.length) {
+          if (++_self.n < _self.stimOrder.length) {
             if (_self.n % _self.breakEvery == 0) {
               _self.takeBreak();
             } else {
@@ -508,9 +508,9 @@ VisualGridBlock.prototype = {
         throwMessage('Familiarization completed');
 
         $("#visualGridContainer").hide();
-        var numTrials = this.itemOrder.length;
+        var numTrials = this.stimOrder.length;
         // approximate duration of whole section, to nearest five minutes (rounded up)
-        var timeNearestFiveMins = Math.ceil(this.itemOrder.length/this.trialsPerMinute / 5) * 5;
+        var timeNearestFiveMins = Math.ceil(this.stimOrder.length/this.trialsPerMinute / 5) * 5;
 
         // If not instruction were provided jump to first trials, else display instructions and
         // wait until continue button is clicked.

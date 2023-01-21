@@ -28,11 +28,11 @@ if (typeof String.prototype.startsWith != 'function') {
 
 function IdentificationBlock(params) {
     // process parameters
-    var stimuliObj, instructions, namespace, css_stim_class;
+    var stimuli, instructions, namespace, css_stim_class;
     for (p in params) {
         switch(p) {
         case 'stimuli':
-            stimuliObj = params[p];
+            stimuli = params[p];
             break;
         case 'instructions':
             instructions = params[p];
@@ -40,11 +40,14 @@ function IdentificationBlock(params) {
         case 'namespace':
             namespace = params[p];
             break;
-        case 'reps':
-            this.reps = params[p];
+        case 'stimReps':
+            this.stimReps = params[p];
             break;
-        case 'blockReps':
-            this.blockReps = params[p];
+        case 'listReps':
+            this.listReps = params[p];
+            break;
+        case 'stimOrder':
+            this.stimOrder = params[p];
             break;
         case 'stimOrderMethod':
             this.stimOrderMethod = params[p];
@@ -105,26 +108,22 @@ function IdentificationBlock(params) {
     }
 
     // install stimuli
-    if (typeof(stimuliObj) === 'undefined') {
+    if (typeof(stimuli) === 'undefined') {
         throwError("Unrecognized stimulus object.")
-    }
-
-    if (isArray(stimuliObj)) {
+    } else if (isArray(stimuli)) {
         // concatenate into one mega-object, and set for this block
-        // NOTE / TODO: I'm uncertain if this part of the loop works... when would you need it?
-        this.stimuliObj = concatenate_stimuli_and_install(stimuliObj, css_stim_class);
-        this.auds = this.stimuliObj.installed;
+        this.stimuli = concatenate_stimuli_and_install(stimuli, css_stim_class);
     } else {
         // set stimuli object for this block
-        this.stimuliObj = stimuliObj;
-        stimuliObj.get_and_load_stims(css_stim_class); // this is asynchronous
+        this.stimuli = stimuli;
+        stimuli.get_and_load_stims(css_stim_class); // this is asynchronous
         $('#continue').show();
     }
 
     // check whether everthing that enforcePerfection and/or provideFeedback require is available
     if (this.enforcePerfection && !this.provideFeedback) {
         throwError("cannot enforcePerfection if provideFeedback is false.");
-    } else if (this.provideFeedback && typeof(this.stimuliObj.mappingStimulusToCorrectResponse) === 'undefined') {
+    } else if (this.provideFeedback && typeof(this.stimuli.mappingStimulusToCorrectResponse) === 'undefined') {
         throwError("cannot provide feedback if stimulus list does not contain a mapping from stimuli to correct identification responses.");
     }
 
@@ -137,9 +136,11 @@ function IdentificationBlock(params) {
 
 
 IdentificationBlock.prototype = {
-    reps: undefined,
-    blockReps: 1,
-    stims: [],
+    stimReps: undefined,
+    listReps: 1,
+    stimOrder: [],
+    stimOrderMethod: 'dont_randomize',
+    blockOrderMethod: 'large_blocks_first',
     n: 0,
     respKeys: undefined, // {71: 'B', 72: 'D'},
     provideFeedback: false,
@@ -152,7 +153,8 @@ IdentificationBlock.prototype = {
     ITI: 1000,
     progressBarStartProportion: 0,
     progressBarEndProportion: 1,
-    auds: [],
+    pbIncrement: undefined,
+    media: [],
     namespace: '',
     catchEndsTrial: true,
     catchKeyCode: 66, // "B"
@@ -164,29 +166,6 @@ IdentificationBlock.prototype = {
     catchAns: false,
     respField: undefined,
     onEndedBlock: undefined,
-    pbIncrement: undefined,
-    stimOrderMethod: 'dont_randomize',
-    blockOrderMethod: 'large_blocks_first',
-
-    getTotalReps: function() {
-        var reps;
-        var blockReps = 1;
-        if (typeof this.reps === 'undefined')  {
-            reps = this.stimuliObj.calibReps;
-        } else {
-            reps = this.reps;
-        }
-
-        if (typeof this.blockReps !== 'undefined') {
-            blockReps = this.blockReps;
-        }
-
-        if (reps.sum) {
-            return(reps.sum());
-        } else {
-            return(reps * blockReps * this.stimuliObj.continuum.length);
-        }
-    },
 
     run: function() {
         var _self = this;
@@ -199,7 +178,7 @@ IdentificationBlock.prototype = {
         var _self = this;
         // takes the stimuli that were loaded asynchronology and matches them with the proper block.
         // Note that each block you installed should have a different namespace so this filters properly.
-        var temp = _self.stimuliObj.get_installed();
+        var temp = _self.stimuli.get_installed();
         var temp2 = []
         for (var i=0; i<temp.length; i++) {
             if (temp[i].class.startsWith(_self.namespace + "stim")) {
@@ -207,21 +186,7 @@ IdentificationBlock.prototype = {
             }
         }
 
-        _self.auds = temp2;
-        _self.stims = temp2;
-
-        var softInit;
-        // parse optional arguments object
-        for (op in opts) {
-            switch (op) {
-            case 'softInit':
-                softInit = true;
-                break;
-            default:
-                throwWarning('Unrecognized Block init option: ' +
-                                         op + ' (' + opts[op] + ')');
-            }
-        }
+        _self.media = temp2;
 
         // initialize trial counter
         this.n = 0;
@@ -232,7 +197,6 @@ IdentificationBlock.prototype = {
         if (typeof this.respKeys === 'undefined') {
             this.respKeys = respKeyMap;
         }
-
 
         // When catchKey is space set catchKeyText to "SPACE" else to catchKey
         if (this.catchKeyCode == 32) {
@@ -272,22 +236,21 @@ IdentificationBlock.prototype = {
 
         ////////////////////////////////////////////////////////////////////////////////
         // Randomize stimuli order.
-        // default to "calibReps" reps property of this.stimuliObj for reps of each
+        // default to "calibReps" reps property of this.stimuli for stimReps of each
         // stimulus.
-        if (typeof(this.reps) === 'undefined') {
-            this.reps = this.stimuliObj.calibReps;
+        if (typeof(this.stimReps) === 'undefined') {
+            this.stimReps = this.stimuli.calibReps;
         }
 
-        this.stims = [];
-        for (var br = 0; br < this.blockReps; br++) {
-            this.stims = this.stims.concat(createStimulusOrder(this.reps, this.stimuliObj.continuum.length, this.stimOrderMethod, this.blockOrderMethod));
+        for (var br = 0; br < this.listReps; br++) {
+            this.stimOrder = this.stimOrder.concat(createStimulusOrder(this.stimReps, this.stimuli.continuum.length, this.stimOrderMethod, this.blockOrderMethod));
         }
 
         // get correct responses for (ordered) stimuli
         this.correctResponses = [];
         if (this.provideFeedback) {
-          for (var i = 0; i < this.stims.length; i++) {
-            this.correctResponses = this.correctResponses.concat(this.stimuliObj.mappingStimulusToCorrectResponse[this.stimuliObj.filenames[this.stims[i]]]);
+          for (var i = 0; i < this.stimOrder.length; i++) {
+            this.correctResponses = this.correctResponses.concat(this.stimuli.mappingStimulusToCorrectResponse[this.stimuli.filenames[this.stimOrder[i]]]);
           }
         }
 
@@ -308,14 +271,12 @@ IdentificationBlock.prototype = {
                                     'Press <span id="dKey" class="respKey">' +
                                     valToKey(this.respKeys, this.categories[1]) + '</span> for "' + this.categories[1] + '"');
 
-        if (!softInit) {
-            // install, initialize, and show a progress bar (progressBar.js)
-            installPB("progressBar", this.progressBarStartProportion);
-            $("#progressBar").show();
-            this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.itemOrder.length;
-            // DEBUGGING: add button to force start of calibration block (skip preview)
-            $('#buttons').append('<input type="button" onclick="calibrationBlock.next()" value="start calibration"></input>');
-        }
+        // install, initialize, and show a progress bar (progressBar.js)
+        installPB("progressBar", this.progressBarStartProportion);
+        $("#progressBar").show();
+        this.pbIncrement = (this.progressBarEndProportion - this.progressBarStartProportion) / this.stimOrder.length;
+        // DEBUGGING: add button to force start of calibration block (skip preview)
+        $('#buttons').append('<input type="button" onclick="calibrationBlock.next()" value="start calibration"></input>');
     },
 
     // start next trial
@@ -337,7 +298,7 @@ IdentificationBlock.prototype = {
         // play next stimuli after ITI has elapsed (asynchronously with fixation display)
         setTimeout(function() {
                          // NOTE: can't use 'this' here, since function is being evaluate outside of method context
-                         var current = _self.auds[_self.stims[_self.n]];
+                         var current = _self.media[_self.stimOrder[_self.n]];
                          throwMessage(current);
                          _self.waitForResp();
 
@@ -513,7 +474,7 @@ IdentificationBlock.prototype = {
     // return info on current state in string form
     info: function() {
         return [this.namespace,
-                this.n, this.stims[this.n], lastplayed].join();
+                this.n, this.stimOrder[this.n], lastplayed].join();
     },
 
     // handle end of trial (called by key press handler)
@@ -526,7 +487,7 @@ IdentificationBlock.prototype = {
         this.recordResp(e);
 
         // if more trials remain, trigger next trial
-        if (++this.n < this.stims.length) {
+        if (++this.n < this.stimOrder.length) {
             this.next();
         } else {
             this.endBlock();
@@ -539,7 +500,7 @@ IdentificationBlock.prototype = {
         $("#catchTrialInstruction").hide();
         $("#catchTrialFeedbackTrue").hide();
         $("#progressBar").hide();
-        $(this.auds).unbind('.' + this.namespace).height(0);
+        $(this.media).unbind('.' + this.namespace).height(0);
         $(document).unbind('.' + this.namespace);
         $(document).trigger('endBlock_' + this.namespace);
         if (typeof(this.onEndedBlock) === 'function') {

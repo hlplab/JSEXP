@@ -81,7 +81,7 @@ Stimuli.prototype = {
                 //for (var j=0; j < indices.length; j++) {
                 $(indices==0 ? [indices] : indices).map(function(j,index) {
                     //_self.queue.loadFile({src: _self.filenameFormatter(j, _self.prefix) +audSuffix, type:createjs.AbstractLoader.AUDIO, css_class:css_class, tmp_css_class:tmp_css_class});
-                    stimuli_list_all.push({'src':_self.filenameFormatter(index, _self.prefix) + audSuffix, 'class':css_class + ' audStim', 'type':'audio'});
+                    stimuli_list_all.push({'src':_self.filenameFormatter(index, _self.prefix, audSuffix), 'class':css_class + ' audStim', 'type':'audio'});
                 });
                 break;
             case 'video':
@@ -89,7 +89,7 @@ Stimuli.prototype = {
                 //$("#videoContainer").html("");
                 $(indices==0 ? [indices] : indices).map(function(j,index) {
 //                    _self.queue.loadFile({src: _self.filenameFormatter(index, _self.prefix) +vidSuffix, type:createjs.AbstractLoader.VIDEO, css_class:css_class, tmp_css_class:tmp_css_class});
-                    stimuli_list_all.push({'src':_self.filenameFormatter(index, _self.prefix) + vidSuffix, 'class':css_class + ' vidStim', 'type':'video'});
+                    stimuli_list_all.push({'src':_self.filenameFormatter(index, _self.prefix, vidSuffix), 'class':css_class + ' vidStim', 'type':'video'});
                 });
                 break;
 
@@ -110,8 +110,11 @@ Stimuli.prototype = {
     },
 
     // default file name formatter just indexes stored filenames.
-    filenameFormatter: function(n, prefix) {
-        return(prefix + this.filenames[n]);
+    filenameFormatter: function(n, prefix, suffix) {
+        var filename;
+        if (!filename.startsWith(prefix)) filename = prefix + this.filenames[n];
+        if (!filename.endsWith(suffix)) filename = filename + suffix;
+        return(filename);
     }
 };
 
@@ -186,7 +189,7 @@ function ExtendedStimuliFileList(baseobj) {
 ExtendedStimuliFileList.prototype = {
     check: function() {
         if (typeof(this.filenames) === 'undefined') {
-            throw('ExtendedStimuliFileList must contains a list of filenames');
+            throwError('ExtendedStimuliFileList must contains a list of filenames');
         }
    }
 };

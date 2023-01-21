@@ -72,7 +72,7 @@ function createStimulusOrder(reps, n_total, method, block_method) {
     // an array of length n_total, each value of which is reps
     if (typeof(reps) === "number") {
         if (typeof(n_total) !== "undefined") {
-            throwMessage("Creating vector of repetitions for a total of " + n_total + "stimuli, each to be shown " + reps + "times.");
+            throwMessage("Creating vector of repetitions for a total of " + n_total + " stimuli, each to be shown " + reps + " times.");
             reps = (function(N) {var x=[]; for (var i=0; i<N; i++) { x[i] = reps; }; return(x); })(n_total);
         } else {
           throwError("Must provide either vector of repetitions (reps) or the total number of stimuli (n_total).");
