@@ -1,4 +1,4 @@
-currentMediaType/*
+/*
  * Author: Dave F. Kleinschmidt
  *
  *    Copyright 2012 Dave Kleinschmidt and
@@ -425,7 +425,7 @@ IdentificationBlock.prototype = {
         } else if (this.respKeys[String.fromCharCode(e.which)] !== this.correctResponses[this.n]) {
           // Subject correctly handled catch trial *but* incorrectly identified stimulus
           feedbackString += "This is INCORRECT. The " + currentMediaType + " contained a " + this.correctResponses[this.n] + ". " +
-            'On trials like this one, you should press "' + valToKey(this.respKeys, this.correctResponses[this.n]) + ".";
+            'On trials like this one, you should press "' + valToKey(this.respKeys, this.correctResponses[this.n]) + '".';
         } else {
           throwError("While computing feedback to the participant, some key event occurred that was not foreseen.");
         }

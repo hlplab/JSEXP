@@ -54,7 +54,7 @@ resetPB = function(elemID) {
 
 refreshPB = function(elemID) {
     var prop = parseFloat($('#' + elemID + ' .pbInner').attr('prop'));
-    throwMessage("Refreshing progress bar to " + prop);
+    // throwMessage("Refreshing progress bar to " + prop);
 
     $('#' + elemID + ' .pbInner').width(prop * $('#' + elemID).width());
 }
