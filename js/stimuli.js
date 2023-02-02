@@ -109,11 +109,12 @@ Stimuli.prototype = {
         return _self.installed;
     },
 
-    // default file name formatter just indexes stored filenames.
     filenameFormatter: function(n, prefix, suffix) {
-        var filename;
-        if (!filename.startsWith(prefix)) filename = prefix + this.filenames[n];
-        if (!filename.endsWith(suffix)) filename = filename + suffix;
+        var filename = this.filenames[n];
+
+        if (!filename.startsWith(prefix)) filename = prefix + filename;
+        if (!filename.endsWith(suffix)) filename += suffix;
+
         return(filename);
     }
 };
@@ -162,10 +163,15 @@ function StimuliFileList(baseobj) {
 }
 
 StimuliFileList.prototype = {
-    filenameFormatter: function(n, prefix) {
-        // default formatter is just going to pick out the nth filename
-        return(prefix + this.filenames[n]);
+    filenameFormatter: function(n, prefix, suffix) {
+      var filename = this.filenames[n];
+
+      if (!filename.startsWith(prefix)) filename = prefix + filename;
+      if (!filename.endsWith(suffix)) filename += suffix;
+
+      return(filename);
     },
+
     prefix: '',
     calibReps: 1,
 
