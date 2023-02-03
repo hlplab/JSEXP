@@ -46,9 +46,6 @@ function IdentificationBlock(params) {
         case 'listReps':
             this.listReps = params[p];
             break;
-        case 'stimOrder':
-            this.stimOrder = params[p];
-            break;
         case 'stimOrderMethod':
             this.stimOrderMethod = params[p];
             break;
@@ -90,6 +87,9 @@ function IdentificationBlock(params) {
             break;
         case 'categories':
             this.categories = params[p];
+            break;
+        case 'handleFeedback':
+            this.handleFeedback = params[p];
             break;
         default:
             throwWarning('Unknown parameter passed to identificationBlock: ' + p);
@@ -138,7 +138,6 @@ function IdentificationBlock(params) {
 IdentificationBlock.prototype = {
     stimReps: undefined,
     listReps: 1,
-    stimOrder: [],
     stimOrderMethod: 'dont_randomize',
     blockOrderMethod: 'large_blocks_first',
     n: 0,
@@ -168,15 +167,14 @@ IdentificationBlock.prototype = {
     onEndedBlock: undefined,
 
     run: function() {
-        var _self = this;
         this.init();
-        _self.next();
+        this.next();
     },
 
     init: function(opts) {
         throwMessage("Initiating block " + this.namespace);
         var _self = this;
-        // takes the stimuli that were loaded asynchronology and matches them with the proper block.
+        // takes the stimuli that were loaded asynchronously and matches them with the proper block.
         // Note that each block you installed should have a different namespace so this filters properly.
         var temp = _self.stimuli.get_installed();
         var temp2 = []
@@ -242,6 +240,7 @@ IdentificationBlock.prototype = {
             this.stimReps = this.stimuli.calibReps;
         }
 
+        this.stimOrder = [];
         for (var br = 0; br < this.listReps; br++) {
             this.stimOrder = this.stimOrder.concat(createStimulusOrder(this.stimReps, this.stimuli.continuum.length, this.stimOrderMethod, this.blockOrderMethod));
         }
