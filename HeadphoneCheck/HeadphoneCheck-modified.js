@@ -325,7 +325,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
 
     $('<div/>', {
       class: 'hc-instruction',
-      html: '<p></p><p>Which sound was the softest? </p>'
+      html: '<p>Trial ' + (headphoneCheckData.pageNum + 1) + '/' + headphoneCheckData.lastPage + '</p><p>Which sound was the softest? </p>'
     }).appendTo($('#' + divID));
 
     //add in the radio buttons for selecting which sound was softest
