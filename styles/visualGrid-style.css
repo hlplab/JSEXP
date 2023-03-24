@@ -74,7 +74,7 @@ div#visualGridContainer > img.vw_trialimage {
 }
 /* bottom-center */
 [vw_pos="7"], [vw_pos='bottomcenter'] {
-    margin-left: -100px;
+    margin-left: -123px;
     bottom: 0;
     left: 50%;
 }
