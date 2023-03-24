@@ -32,18 +32,19 @@ function Experiment(obj) {
     this.cookie = obj.cookie;
     this.survey = obj.survey; //TODO: make this a list of surveys?
     this.urlparams = gupo();
-    this.consentFormDiv = '<div id="consent">By continuing this experiment, you confirm that you have read and understand the <a target="_blank" href="' + obj.rsrbConsentFormURL +
+    this.consentFormDiv = typeof(obj.consentFormDiv) === 'undefined' ? '<div id="consent">By continuing this experiment, you confirm that you have read and understand the <a target="_blank" href="' + obj.rsrbConsentFormURL +
         '">consent form</a>, that you are willing to participate in this experiment, and that you agree that the data you provide by participating can be used in scientific publications (no identifying information will be published). ' +
-        'Sometimes we share non-identifying data elicited from you &mdash; including sound files &mdash; with other researchers for scientific purposes (your MTurk/Prolific ID will be replaced with an arbitrary alphanumeric code).</div>';
+        'Sometimes we share non-identifying data elicited from you &mdash; including sound files &mdash; with other researchers for scientific purposes (your MTurk/Prolific ID will be replaced with an arbitrary alphanumeric code).</div>' : obj.consentFormDiv;
     //Record random string as identifier
     this.randomID = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     this.sandboxmode = checkSandbox(this.urlparams);
     this.previewMode = checkPreview(this.urlparams);
+    this.experimentCompletedInstructions = typeof(obj.experimentCompletedInstructions) === 'undefined' ? "<h3>Thanks for participating!</h3><p>That's the end of the experiment!  Just a few more things for you to answer.</p>" : obj.experimentCompletedInstructions;
+    this.continueButtonText = typeof(obj.continueButtonText) === 'undefined' ? 'Click to continue...' : obj.continueButtonText;
 }
 
 
 Experiment.prototype = {
-
     init: function() {
             // write time at which experiment was started
             var userDateTimeAtInitialization = new Date();
@@ -156,7 +157,7 @@ Experiment.prototype = {
             this.consentFormDiv = this.consentFormDiv.format(this.rsrbConsentFormURL);
 
             // populate remaining DIVs now that all incompatible browsers have been handled
-            $("#continue").html('<span id="contText">Click to continue...</span>');
+            $("#continue").html('<span id="contText">' + this.continueButtonText + '</span>');
             $("#fixation").html('+');
             $("#whiteDotFeedback").html('Press B when you see a white dot.');
             $("#whiteDotFeedbackTrue").html('You saw a white dot and pressed B!');
@@ -314,9 +315,7 @@ Experiment.prototype = {
             // success
             // no error reported to callback
             $("#passCalibration").val("passed");
-            $("#instructions").html("<h3>Thanks for participating!</h3>" +
-                                    "<p>That's the end of the experiment!  Just a few more things for you to answer.</p>")
-            .show();
+            $("#instructions").html(this.experimentCompletedInstructions).show();
 
             continueButton(end_surveys_and_submit);
             // end_surveys_and_submit() is a function in js-adapt/mturk-helpers.js
