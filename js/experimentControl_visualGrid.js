@@ -35,7 +35,8 @@ function Experiment(obj) {
     this.consentFormDiv = typeof(obj.consentFormDiv) === 'undefined' ? '<div id="consent">By continuing this experiment, you confirm that you have read and understand the <a target="_blank" href="' + obj.rsrbConsentFormURL +
         '">consent form</a>, that you are willing to participate in this experiment, and that you agree that the data you provide by participating can be used in scientific publications (no identifying information will be published). ' +
         'Sometimes we share non-identifying data elicited from you &mdash; including sound files &mdash; with other researchers for scientific purposes (your MTurk/Prolific ID will be replaced with an arbitrary alphanumeric code).</div>' : obj.consentFormDiv;
-    //Record random string as identifier
+    this.rsrbSurveyFileLocation = typeof(obj.rsrbSurveyFileLocation) === 'undefined' ? 'JSEXP/surveys/rsrb_survey.html' : obj.rsrbSurveyFileLocation;
+    // Record random string as identifier
     this.randomID = randomString(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     this.sandboxmode = checkSandbox(this.urlparams);
     this.previewMode = checkPreview(this.urlparams);
@@ -172,7 +173,7 @@ Experiment.prototype = {
             var rsrbNum = this.rsrbProtocolNumber;
             $('form#mturk_form')
                 .append($('<div id="rsrb" class="survey">')
-                        .load('JSEXP/surveys/rsrb_survey.html #rsrb > *', function() {
+                        .load(this.rsrbSurveyFileLocation + ' #rsrb > *', function() {
                             // set protocol number
                             $('input[name="rsrb.protocol"]:hidden').val(rsrbNum);
                             throwMessage('Name of RSRB protocol: ' + rsrbNum + '\nRSRB information written into form field: ' + $('input[name="rsrb.protocol"]').val() + "\n(this value is expected to be undefined unless you are sandboxing or live)");

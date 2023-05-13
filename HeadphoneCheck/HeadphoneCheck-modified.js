@@ -37,6 +37,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
                               sampleWithReplacement: true,
                               doCalibration: true,
                               debug: false,
+                              language: 'english' // TFJ: added for cross-language support
                              };
 
   /*** PUBLIC FUNCTIONS ***/
@@ -134,13 +135,25 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
    * @return {undefined}
    */
   HeadphoneCheck.renderHeadphoneCheckPage = function() {
+    var instructions_test = 'This test consists of ' + headphoneCheckConfig.totalTrials + ' trials. Each trial starts ' +
+          'when you hit <b>Play</b>. You will then hear three sounds separated by silences. Please ' +
+          'select which of the three sounds was softest (quietest) and <strong>then click Continue to ' +
+          'begin the next trial</strong>. Listen carefully. <strong>Each trial can only be played once.</strong><p></p>';
+    var messageContinue = 'Continue';
+
+    if (headphoneCheckConfig.language.toLowerCase() === 'swedish') {
+      instructions_test = 'Denna volymkontroll består av ' + headphoneCheckConfig.totalTrials + ' tester. Varje test börjar ' +
+            'när du klickar på <b>Spela</b>. Du kommmer att höra tre ljud. Vänligen ' +
+            'svara på vilket av dessa ljud som var det svagaste (det lägsta) av de tre du hörde och <strong>klicka därefter på Fortsätt för att ' +
+            'börja nästa test</strong>. Lyssna noga. <strong>Varje test spelas bara upp en gång.</strong><p></p>';
+      messageContinue = 'Fortsätt';
+    }
+
+
     // render boilerplate instruction text
     $('<div/>', {
       class: 'hc-instruction',
-      html: 'This test consists of ' + headphoneCheckConfig.totalTrials + ' trials. Each trial starts ' +
-            'when you hit <b>Play</b>. You will then hear three sounds separated by silences. Please ' +
-            'select which of the three sounds was softest (quietest) and <strong>then click Continue to ' +
-            'begin the next trial</strong>. Listen carefully. <strong>Each trial can only be played once.</strong><p></p>'
+      html: instructions_test
     }).appendTo($('#hc-container'));
 
     if (headphoneCheckConfig.debug) console.log(headphoneCheckData);
@@ -179,7 +192,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
 
     // Add button to continue
     $('<button/>', {
-      text: 'Continue',
+      text: messageContinue,
       click: function () {
         var canContinue = checkCanContinue();
         for (stimID = 0; stimID < headphoneCheckConfig.trialsPerPage; stimID++) {
@@ -231,12 +244,29 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
     //   class: 'hc-calibration-instruction',
     //   text: 'Level Calibration'
     // }).appendTo($('#hc-container'));
+
+    // Set string defaults, taking into account language
+    var instructions_start_top = 'First, set your computer volume to about 25% of maximum. ' +
+          'Press the button, then <strong>turn up the volume on your computer until the ' +
+          'calibration noise is at a loud but comfortable level</strong>. ' +
+          'Play the calibration sound as many times as you like.';
+    var instructions_start_bottom = 'Press <strong>Continue</strong> when level calibration is complete.';
+    var messagePlay = 'Play';
+    var messageContinue = 'Continue';
+
+    if (headphoneCheckConfig.language.toLowerCase() === 'swedish') {
+      instructions_start = 'Börja med att ställa in volymen på ungefär 25% av maxvolymen. ' +
+            'Klicka på knappen, <strong>öka därefter volymen tills ' +
+            'kalibreringsbruset är på en hög men bekväm ljudnivå</strong>. ' +
+            'Du kan spela uppp kalibreringsbruset hur många gånger du vill.<p></p>';
+      instructions_start_bottom = '<p>Klicka på <strong>Fortsätt</strong> när kalibreringen är klar.</p>';
+      messagePlay = 'Spela';
+      messageContinue = 'Fortsätt';
+    }
+
     $('<div/>', {
       class: 'hc-calibration-instruction',
-      html: 'First, set your computer volume to about 25% of maximum. ' +
-            'Press the button, then <strong>turn up the volume on your computer until the ' +
-            'calibration noise is at a loud but comfortable level</strong>. ' +
-            'Play the calibration sound as many times as you like.<p></p>'
+      html: instructions_start + '<p></p>'
     }).appendTo($('#hc-container'));
     $('<div/>', {
       id: 'hc-calibration-div',
@@ -258,12 +288,12 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
           playCalibration('hc-calibration-audio');
         }
       },
-      text: 'Play',
+      text: messagePlay,
     }).css('display', 'block').appendTo($('#hc-calibration-div'));
 
     $('<div/>', {
       class: 'hc-calibration-instruction',
-      html: '<p>Press <strong>Continue</strong> when level calibration is complete.</p>',
+      html: '<p>' + instructions_start_bottom + '</p>',
     }).appendTo($('#hc-container'));
 
     // Add button to continue
@@ -271,7 +301,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
       id: 'hc-calibration-continue-button',
       class: 'hc-calibration-instruction',
       disabled: true,
-      text: 'Continue',
+      text: messageContinue,
       click: function () {
         st_isPlaying = false;
         teardownHTMLPage();
@@ -292,6 +322,26 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
    * @return {undefined}
    */
   function renderHeadphoneCheckTrial(stimDiv, stimID, stimFile) {
+    var messageTrialStart = 'Trial';
+    var messageTrialEnd = 'Which sound was the softest?';
+    var messagePlay = 'Play';
+    var radioButtonInfo = [
+                            {'id': '1', 'name': ' <strong>1st</strong> sound '},
+                            {'id': '2', 'name': ' <strong>2nd</strong> sound '},
+                            {'id': '3', 'name': ' <strong>3rd</strong> sound '},
+                          ];
+
+    if (headphoneCheckConfig.language.toLowerCase() === 'swedish') {
+      messageTrialStart = 'Test';
+      messageTrialEnd = 'Vilket ljud var svagast?';
+      messagePlay = 'Spela';
+      radioButtonInfo = [
+                            {'id': '1', 'name': ' <strong>Det första</strong> ljudet '},
+                            {'id': '2', 'name': ' <strong>Det andra</strong> ljudet '},
+                            {'id': '3', 'name': ' <strong>Det tredje</strong> ljudet '},
+                        ];
+    }
+
     if (headphoneCheckConfig.debug) console.log('--->' +' '+ stimDiv + ' ' + stimID + ', ' + stimFile);
     if (stimFile === undefined) return;
     var divID = 'hc-stim-' + stimID;
@@ -315,7 +365,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
     .append(
       $('<button/>', {
         id: 'hc-play-button-' + stimID,
-        text: 'Play',
+        text: messagePlay,
         disabled: false,
         click: function () {
           if (!st_isPlaying) playStim(stimID);
@@ -325,7 +375,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
 
     $('<div/>', {
       class: 'hc-instruction',
-      html: '<p>Trial ' + (headphoneCheckData.pageNum + 1) + '/' + headphoneCheckData.lastPage + '</p><p>Which sound was the softest? </p>'
+      html: '<p>' + messageTrialStart + ' ' + (headphoneCheckData.pageNum + 1) + '/' + headphoneCheckData.lastPage + '</p><p>' + messageTrialEnd + '</p>'
     }).appendTo($('#' + divID));
 
     //add in the radio buttons for selecting which sound was softest
@@ -333,13 +383,6 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
       id: 'hc-radio-buttonset-' + stimID,
       class: 'hc-buttonset-vertical',
     }).appendTo($('#' + divID));
-
-    //give the label info for the buttons
-    var radioButtonInfo = [
-                            {'id': '1', 'name': ' <strong>1st</strong> sound '},
-                            {'id': '2', 'name': ' <strong>2nd</strong> sound '},
-                            {'id': '3', 'name': ' <strong>3rd</strong> sound '},
-                          ];
 
     $.each(radioButtonInfo, function() {
       $('#hc-radio-buttonset-' + stimID)

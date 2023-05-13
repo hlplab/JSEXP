@@ -78,7 +78,7 @@ InstructionsSubsectionsBlock.prototype = {
             .append('<h3>' + this.beginExperimentHeading + '</h3>')
             .append($('<div></div>')
                     .addClass('listcontent')
-                    .append('<p>' + this.beginExperimentInstructions + '/p>')
+                    .append('<p>' + this.beginExperimentInstructions + '</p>')
                     .append('<button type="button" id="endinstr">' + this.beginExperimentButtonText + '</button>'))
             .appendTo(instList);
 

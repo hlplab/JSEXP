@@ -31,9 +31,8 @@ function InstructionsSubsectionsBlock(instrObj) {
     this.title = typeof(instrObj.title) === 'undefined' ? 'Experiment instructions' : instrObj.title;
     this.mainInstructions = instrObj.mainInstructions;
     this.subsections = instrObj.subsections;
-    this.subsectionContinueButtonText = typeof(instrObj.subsectionContinueButtonText) === 'undefined' ? 'Take me to the next section' : instrObj.subsectionContinueButtonText;
-    this.beginExperimentHeading = typeof(instrObj.beginExperimentHeading) === 'undefined' ? '<h3>Begin the experiment</h3>' : instrObj.beginExperimentHeading;
-    this.beginExperimentInstructions = typeof(instrObj.beginExperimentInstructions) === 'undefined' ? '<p>Once you press the green button, these instructions will disappear, so make sure you understand them fully before you click.</p>' : instrObj.beginExperimentInstructions;
+    this.beginExperimentHeading = typeof(instrObj.beginExperimentHeading) === 'undefined' ? 'Begin the experiment' : instrObj.beginExperimentHeading;
+    this.beginExperimentInstructions = typeof(instrObj.beginExperimentInstructions) === 'undefined' ? 'Once you press the green button, these instructions will disappear, so make sure you understand them fully before you click.' : instrObj.beginExperimentInstructions;
     this.beginExperimentButtonText = typeof(instrObj.beginExperimentButtonText) === 'undefined' ? 'I confirm that I meet the requirements for this experiment, that I have read and understood the instructions and the consent form, and that I want to start the experiment.' : instrObj.beginExperimentButtonText;
     this.logoImg = instrObj.logoImg;
     this.onEndedBlock = function() {return this; };
@@ -76,10 +75,10 @@ InstructionsSubsectionsBlock.prototype = {
 
         // add final div w/ end instructions button
         var finalLi = $("<li></li>").addClass('instructionlistitem').attr('id', 'endInstructions')
-            .append(this.beginExperimentHeading)
+            .append('<h3>' + this.beginExperimentHeading + '</h3>')
             .append($('<div></div>')
                     .addClass('listcontent')
-                    .append(this.beginExperimentInstructions)
+                    .append('<p>' + this.beginExperimentInstructions + '</p>')
                     .append('<button type="button" id="endinstr">' + this.beginExperimentButtonText + '</button>'))
             .appendTo(instList);
 
@@ -93,10 +92,11 @@ InstructionsSubsectionsBlock.prototype = {
                    // add title element
                    $("<h3></h3>").text(this.title).appendTo(thisLi);
                    // create continue element (checkbox w/ label if provided, otherwise generic button)
+                   var continueButtonText = typeof(this.continueButtonText) === 'undefined' ? 'Take me to the next section' : this.continueButtonText;
                    var contElem =
                        isFinally ? '' :
                        typeof(this.checkboxText) === 'undefined'
-                       ? '<button type="button" class="instructionbutton">' + this.subsectionContinueButtonText + '</button>'
+                       ? '<button type="button" class="instructionbutton">' + continueButtonText + '</button>'
                        : '<p class="instructioncheckbox"><input type="checkbox" />' + this.checkboxText + '</p>';
                    // create content.
                    // first, coerce to array.  this wraps naked strings and does nothing to arrays
