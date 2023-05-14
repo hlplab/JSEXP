@@ -1,0 +1,165 @@
+div#visualGridContainer {
+    width: 800px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 5px solid #dddddd;
+    position: relative;
+    display: none;
+}
+
+div#visualGridContainer > div#readyWaitContainer {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    top: 50%;
+    left: 50%;
+}
+
+div#visualGridContainer > div#readyWaitContainer > img {
+    height: 40px;
+    width: 40px;
+}
+
+/* positioning of items in the visual world for the current trial:
+ * for all elements: position: absolute in a position: relative container means
+ * position is relative to container
+ */
+div#visualGridContainer > img.vw_trialimage {
+    position: absolute;
+    width: 160px;
+    height: 120px;
+}
+/* from top-left to bottom-right, from left to right and then top to bottom */
+[vw_pos="1"] {
+    top: 0;
+    left: 0%;
+}
+[vw_pos="2"] {
+    top: 0;
+    left: 20%;
+}
+[vw_pos="3"] {
+    top: 0;
+    left: 40%;
+}
+[vw_pos="4"] {
+    top: 0;
+    left: 60%;
+}
+[vw_pos="5"] {
+    top: 0;
+    left: 80%;
+}
+[vw_pos="6"] {
+    top: 20%;
+    left: 0%;
+}
+[vw_pos="7"] {
+    top: 20%;
+    left: 20%;
+}
+[vw_pos="8"] {
+    top: 20%;
+    left: 40%;
+}
+[vw_pos="9"] {
+    top: 20%;
+    left: 60%;
+}
+[vw_pos="10"] {
+    top: 20%;
+    left: 80%;
+}
+[vw_pos="11"] {
+    top: 40%;
+    left: 0%;
+}
+[vw_pos="12"] {
+    top: 40%;
+    left: 20%;
+}
+[vw_pos="13"] {
+    top: 40%;
+    left: 40%;
+}
+[vw_pos="14"] {
+    top: 40%;
+    left: 60%;
+}
+[vw_pos="15"] {
+    top: 40%;
+    left: 80%;
+}
+[vw_pos="16"] {
+    top: 60%;
+    left: 0%;
+}
+[vw_pos="17"] {
+    top: 60%;
+    left: 20%;
+}
+[vw_pos="18"] {
+    top: 60%;
+    left: 40%;
+}
+[vw_pos="19"] {
+    top: 60%;
+    left: 60%;
+}
+[vw_pos="20"] {
+    top: 60%;
+    left: 80%;
+}
+[vw_pos="21"] {
+    top: 80%;
+    left: 0%;
+}
+[vw_pos="22"] {
+    top: 80%;
+    left: 20%;
+}
+[vw_pos="23"] {
+    top: 80%;
+    left: 40%;
+}
+[vw_pos="24"] {
+    top: 80%;
+    left: 60%;
+}
+[vw_pos="25"] {
+    top: 80%;
+    left: 80%;
+}
+
+/* styling of familiarization images */
+div#visualGridContainer > img.familiarizationImage {
+    position: absolute;
+    margin-left: -80px;
+    margin-top: -60px;
+    left: 50%;
+    top: 50%;
+    z-index: 1000;
+}
+
+div#visualGridContainer > div#familiarizationText {
+    position: absolute;
+    width: 160px;
+    margin-left: -80px;
+    left: 50%;
+    top: 66%;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 40pt;
+}
+
+div#visualGridContainer > div#familiarizationInstructions {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 10%;
+    text-align: center;
+    font-size: 16pt;
+}
