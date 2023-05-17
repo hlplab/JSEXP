@@ -230,9 +230,21 @@ var end_surveys_and_submit = function() {
                           alert("Pausing for read-out from console.");
                         }
 
-                        throwMessage("Submitting to Proliferate/Prolific.");
-						            proliferate.submit(output); // output is the JSON object converted from #mturk_form
-                    }
+                        throwMessage("Submitting to " + $("#platform").val() + ".");
+                        // output is the JSON object converted from #mturk_form
+                        if ($("#platform").val() === 'prolific') {
+						                proliferate.submit(output);
+                        } else if ($("#platform").val() === 'proliferate') {
+                            proliferate.submit(output, function(resp) {
+                                var completionURL = resp["completion_URL"];
+                                completionURL = completionURL +
+                                    "?participant_id=" + $("#participant_id").val() +
+                                    "&random_id=" + $("#randomID").val() +
+                                    "&experiment_id=" + $("#experiment_id").val();
+                                window.setTimeout(function() { window.location.href = completionURL; }, 1000);
+                            });
+                        } else throwError("Platform to submit to not recognized: " + $("#platform").val());
+                     }
                });
            }
        }
