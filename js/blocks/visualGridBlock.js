@@ -33,6 +33,9 @@ function VisualGridBlock(params) {
         case 'instructions':
             this.instructions = params[p];
             break;
+        case 'language':
+            this.language = params[p];
+            break;
         case 'namespace':
             namespace = params[p];
             break;
@@ -224,8 +227,13 @@ VisualGridBlock.prototype = {
 
     takeBreak: function() {
         var _self = this;
+
         $("#visualGridContainer").hide();
-        $("#instructions").html('<h3>Break Time!</h3><p>If you\'d like to take a break for a few minutes, you can do that now. Keep in mind that you have a limited amount of time to complete this HIT.</p><p>We appreciate your continued attention to the experiment. We recognize it can be tiring.</p>').show();
+        if (this.language && this.language.toLowerCase() == "swedish") {
+            $("#instructions").html('<h3>Dags för en paus!</h3><p>Du kan ta en paus i några minuter om du vill. Tänk på att du har en tidsbegränsning för att utföra uppgiften.</p><p>Vi uppskattar din fortsatta uppmärksamhet på experimentet, även om det kan vara tröttsamt.</p>').show();
+        } else {
+            $("#instructions").html('<h3>Break Time!</h3><p>If you\'d like to take a break for a few minutes, you can do that now. Keep in mind that you have a limited amount of time to complete this HIT.</p><p>We appreciate your continued attention to the experiment. We recognize it can be tiring.</p>').show();
+        }
         continueButton(function() {
                            $("#instructions").hide();
                            $("#visualGridContainer").show();
@@ -410,8 +418,8 @@ VisualGridBlock.prototype = {
 
       // record response
       this.recordResp(e);
-
-      setTimeout(function() {
+        console.error("invoked")
+        setTimeout(function() {
           // hide images and scrub of identifiers
           $('img.vw_trialimage')
           .removeClass('vw_trialimage')
@@ -421,7 +429,7 @@ VisualGridBlock.prototype = {
           // next trial, or end
           if (++_self.n < _self.stimOrder.length) {
             if (_self.n % _self.breakEvery == 0) {
-              _self.takeBreak();
+              _self.takeBreak('hello');
             } else {
               _self.next();
             }
