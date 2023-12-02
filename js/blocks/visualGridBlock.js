@@ -418,7 +418,6 @@ VisualGridBlock.prototype = {
 
       // record response
       this.recordResp(e);
-        console.error("invoked")
         setTimeout(function() {
           // hide images and scrub of identifiers
           $('img.vw_trialimage')
@@ -429,7 +428,7 @@ VisualGridBlock.prototype = {
           // next trial, or end
           if (++_self.n < _self.stimOrder.length) {
             if (_self.n % _self.breakEvery == 0) {
-              _self.takeBreak('hello');
+              _self.takeBreak();
             } else {
               _self.next();
             }
