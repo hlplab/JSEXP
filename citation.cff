@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this repository for running your experiments, please cite it as below."
+authors:
+  - family-names: Kleinschmidt
+    given-names: Dave
+    orcid: https://orcid.org/0000-0002-7442-2762
+  - family-names: Burchill
+    given-names: Zach
+  - family-names: Bushong
+    given-names: Wednesday
+    orcid: https://orcid.org/0000-0002-1837-0689
+  - family-names: Karboga
+    given-names: Gevher
+  - family-names: Jaeger
+    given-names: Florian
+    orcid: https://orcid.org/0000-0002-1158-7308
+  - family-names: Liu
+    given-names: Linda
+  - family-names: Persson
+    given-names: Anna
+  - family-names: Tan
+    given-names: Maryann
+    orcid: https://orcid.org/0000-0003-4368-5225
+  - family-names: Xie
+    given-names: Xin
+    orcid: https://orcid.org/0000-0002-7021-5053
+title: "JSEXP"
+version: 2.0.4
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.1234
+date-released: 2021-09-23
+url: https://github.com/hlplab/JSEXP
