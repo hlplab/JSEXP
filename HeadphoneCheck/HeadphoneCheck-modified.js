@@ -246,7 +246,7 @@ Contact Ray Gonzalez raygon@mit.edu or Kevin J. P. Woods kwoods@mit.edu
     // }).appendTo($('#hc-container'));
 
     // Set string defaults, taking into account language
-    var instructions_start_top = 'First, set your computer volume to about 25% of maximum. ' +
+    var instructions_start = 'First, set your computer volume to about 25% of maximum. ' +
           'Press the button, then <strong>turn up the volume on your computer until the ' +
           'calibration noise is at a loud but comfortable level</strong>. ' +
           'Play the calibration sound as many times as you like.';
