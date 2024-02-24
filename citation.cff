@@ -4,9 +4,6 @@ authors:
   - family-names: Kleinschmidt
     given-names: Dave
     orcid: https://orcid.org/0000-0002-7442-2762
-  - family-names: Jaeger
-    given-names: Florian
-    orcid: https://orcid.org/0000-0002-1158-7308
   - family-names: Liu
     given-names: Linda
   - family-names: Burchill
@@ -22,6 +19,9 @@ authors:
     orcid: https://orcid.org/0000-0003-4368-5225
   - family-names: Karboga
     given-names: Gevher
+  - family-names: Jaeger
+    given-names: Florian
+    orcid: https://orcid.org/0000-0002-1158-7308
 title: "JSEXP"
 version: 2.0.4
 identifiers:
